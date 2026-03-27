@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANCHOR Framework — Slide Deck + Speaker Notes</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#1B2A4A;--red:#C8102E;--cream:#F5EDE0;--bg:#f4f4f2;--textLight:#6B7B94}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--navy);-webkit-font-smoothing:antialiased;overflow:hidden;height:100vh}
+
+/* TOP BAR */
+.topbar{background:var(--navy);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--red);height:44px;flex-shrink:0}
+.topbar h1{color:white;font-size:13px;font-weight:600;letter-spacing:2px}
+.topbar .controls{display:flex;align-items:center;gap:12px}
+.topbar .back-btn{background:transparent;border:1.5px solid rgba(255,255,255,0.3);color:white;padding:5px 14px;border-radius:6px;font-size:11px;cursor:pointer;text-decoration:none;font-weight:500;transition:all 0.2s}
+.topbar .back-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.6)}
+.slide-counter{color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;letter-spacing:1px}
+.slide-counter strong{color:white}
+
+/* MAIN LAYOUT */
+.main-layout{display:flex;height:calc(100vh - 44px)}
+
+/* LEFT: SLIDE IMAGE */
+.slide-panel{flex:1;display:flex;flex-direction:column;background:#222;position:relative}
+.img-container{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden}
+.img-container img{max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 4px 24px rgba(0,0,0,0.3);border-radius:4px;background:white}
+
+/* NAV BAR */
+.nav-bar{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;background:rgba(0,0,0,0.3);flex-shrink:0}
+.nav-bar button{background:var(--navy);color:white;border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.nav-bar button:hover{background:var(--red)}
+.nav-bar button:disabled{opacity:0.2;cursor:default;background:var(--navy)}
+.nav-dots{display:flex;gap:5px}
+.nav-dots span{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;transition:all 0.2s}
+.nav-dots span.active{background:var(--red);transform:scale(1.3)}
+
+/* RIGHT: NOTES PANEL */
+.notes-panel{width:340px;background:white;border-left:1px solid #ddd;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.notes-header{padding:14px 18px;background:var(--cream);border-bottom:1px solid #e5ddd0;flex-shrink:0}
+.notes-header h3{font-size:11px;font-weight:700;color:var(--red);letter-spacing:2px;text-transform:uppercase}
+.notes-header .slide-title{font-size:14px;font-weight:600;color:var(--navy);margin-top:4px}
+.notes-body{flex:1;overflow-y:auto;padding:18px}
+.notes-body p{font-size:13px;color:#444;line-height:1.8;margin-bottom:10px}
+.notes-body .pause{color:var(--red);font-style:italic;font-size:12px;display:block;margin:6px 0}
+.notes-body .empty{color:#bbb;font-style:italic;font-size:13px;text-align:center;margin-top:40px}
+
+/* KEYBOARD HINT */
+.kb-hint{padding:8px;text-align:center;font-size:9px;color:rgba(255,255,255,0.3);background:rgba(0,0,0,0.2);flex-shrink:0}
+
+/* TTS CONTROLS */
+.tts-controls{display:flex;gap:8px;padding:10px 18px;background:var(--cream);border-bottom:1px solid #e5ddd0;flex-shrink:0;align-items:center}
+.tts-btn{background:var(--navy);color:white;border:none;padding:7px 14px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:all .2s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.tts-btn:hover{background:var(--red)}
+.tts-btn.active{background:var(--red);animation:pulse-btn 2s ease-in-out infinite}
+.tts-btn.stop{background:#666}
+.tts-btn.stop:hover{background:#888}
+@keyframes pulse-btn{0%,100%{opacity:1}50%{opacity:0.8}}
+
+/* SOUND WAVE ANIMATION */
+.sound-indicator{display:none;align-items:flex-end;gap:2px;height:16px;margin-left:6px}
+.sound-indicator.active{display:flex}
+.sound-bar{width:3px;background:var(--red);border-radius:1.5px;animation:sound-wave 1s ease-in-out infinite}
+.sound-bar:nth-child(1){height:4px;animation-delay:0s}
+.sound-bar:nth-child(2){height:10px;animation-delay:0.15s}
+.sound-bar:nth-child(3){height:6px;animation-delay:0.3s}
+.sound-bar:nth-child(4){height:14px;animation-delay:0.1s}
+.sound-bar:nth-child(5){height:8px;animation-delay:0.25s}
+@keyframes sound-wave{0%,100%{transform:scaleY(0.3)}50%{transform:scaleY(1)}}
+
+/* TIMER */
+.tts-timer{font-family:'SF Mono',Menlo,Consolas,monospace;font-size:12px;font-weight:600;color:var(--navy);letter-spacing:0.5px;margin-left:auto;min-width:44px;text-align:right}
+.tts-status-text{font-size:10px;color:var(--textLight);letter-spacing:0.3px;margin-left:8px}
+
+/* RESPONSIVE */
+@media(max-width:900px){.notes-panel{width:280px}}
+@media(max-width:700px){
+.main-layout{flex-direction:column}
+.notes-panel{width:100%;height:40vh;border-left:none;border-top:1px solid #ddd}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+<h1>ANCHOR FRAMEWORK</h1>
+<div class="controls">
+<span class="slide-counter">SLIDE <strong id="currentNum">1</strong> / <strong>11</strong></span>
+<a href="index.html" class="back-btn">&larr; Back</a>
+</div>
+</div>
+
+<div class="main-layout">
+
+<!-- LEFT: SLIDE IMAGE -->
+<div class="slide-panel">
+<div class="img-container">
+<img id="slideImg" src="" alt="Slide">
+</div>
+<div class="nav-bar">
+<button id="prevBtn" onclick="go(-1)">&larr;</button>
+<div class="nav-dots" id="dots"></div>
+<button id="nextBtn" onclick="go(1)">&rarr;</button>
+</div>
+<div class="kb-hint">Arrow keys to navigate</div>
+</div>
+
+<!-- RIGHT: SPEAKER NOTES -->
+<div class="notes-panel">
+<div class="notes-header">
+<h3>Speaker Notes</h3>
+<div class="slide-title" id="slideTitle">Slide 1 — Title</div>
+</div>
+<div class="tts-controls">
+<button class="tts-btn" id="playBtn" onclick="toggleAutoPlay()">&#9654; Auto-Play</button>
+<button class="tts-btn" id="podcastBtn" onclick="togglePodcast()">&#127911; Podcast</button>
+<button class="tts-btn stop" id="stopBtn" onclick="stopAll()" style="display:none">&#9724; Stop</button>
+<div class="sound-indicator" id="soundIndicator"><div class="sound-bar"></div><div class="sound-bar"></div><div class="sound-bar"></div><div class="sound-bar"></div><div class="sound-bar"></div></div>
+<span class="tts-status-text" id="ttsStatus"></span>
+<span class="tts-timer" id="ttsTimer"></span>
+</div>
+<div class="notes-body" id="notesBody">
+<p>Loading...</p>
+</div>
+</div>
+
+</div>
+
+<!-- Slide images (base64 from PDF) -->
+<script src="anchor_slides.js"></script>
+
+<script>
+// Slide titles
+var titles = [
+"Title",
+"The Hook",
+"The World We Lead In",
+"Discover",
+"Dream",
+"Design: The ANCHOR Framework",
+"The Calibration Engine",
+"Session Mapping",
+"Leadership Tools",
+"Destiny",
+"Close"
+];
+
+// Speaker notes (short, simple, impactful)
+var notes = [
+// Slide 1 — Title
+"Good afternoon. We are Group 3.\n\nOur question this week: how can holistic leadership help organizations lead through constant change?\n\nWe didn\u2019t start with theory. We started with a real company. And we built a framework from what we found.",
+
+// Slide 2 — The Hook
+"Imagine a company with 100 people. That means 100 families. Their children.\n\n[Pause.]\n\nNow imagine this company is growing at 40% per year. And its founders realize they can no longer lead it alone.\n\nThey did something rare. They lowered their pride. They elevated their humility. And they started rebuilding.\n\nThis is PORTILAME. Portuguese wood construction. 20 years of history. Our case study.",
+
+// Slide 3 — The World We Lead In
+"66% of European workers have experienced burnout. 70% of change initiatives fail. Only 13% are truly engaged at work.\n\nThe world is changing faster than our organizations can keep up.\n\nOur approach: use a real company where culture was the DNA, rapid growth broke it, and the mission became recovering what was always there.",
+
+// Slide 4 — Discover
+"We asked: when is leadership at its best?\n\nAcross five organizations, five answers kept coming back.\n\nTrust comes first \u2014 always. Given before it is earned.\n\nFlexibility unlocks people. Autonomy creates better solutions than any manual.\n\nOpen communication means being real \u2014 not performing confidence.\n\nSupport is built before crisis hits \u2014 not during.\n\nAnd shared purpose reduces uncertainty. When people know why, they figure out how.\n\nAt PORTILAME, this was the DNA that built 20 years. \u2018Who likes, comes. Who loves, stays.\u2019",
+
+// Slide 5 — Dream
+"A child of an employee said this at a company event. And it stopped the room.\n\n\u2018My hero is my father. When I grow up, I want to be like him \u2014 work at PORTILAME.\u2019\n\nThat is the dream. Not metrics. Not awards. Children who see their parents come home proud and fulfilled.\n\nPORTILAME had this culture from day one. Growth fractured it. The mission now: recover it, protect it, and build a framework any organization can use.\n\nA framework so light that people carry it like identity \u2014 not obligation.",
+
+// Slide 6 — Design: The ANCHOR Framework
+"From real organizational pain, we built ANCHOR. Six dimensions. Three games. One anchor.\n\nAwareness \u2014 know yourself. Your strengths. Your biases. Your limits.\n\nNarrative \u2014 tell the real story. Stories change brain chemistry. Oxytocin up, cortisol down.\n\nCadence \u2014 protect your rhythm. Digital discipline. Weekly rituals. Quarterly reviews.\n\nHumanity \u2014 create belonging. Permission to fail. Permission to be real.\n\nOrganization \u2014 build structure that frees people, not traps them.\n\nResilience \u2014 protect your energy. Recovery is not weakness. It is strategy.\n\nThe Cisco case study proved this: when you stop fixing problems and start building on strengths, performance becomes sustainable \u2014 and human.",
+
+// Slide 7 — The Calibration Engine
+"Six dimensions tell you who you are. But you also need to know where the world is going.\n\nThe Radar has three layers.\n\nRadar Score \u2014 how healthy is each dimension right now? Your internal truth.\n\nUniversal KPI \u2014 how do you compare to the best? Your external benchmark.\n\nGalactic KPI \u2014 where should you be in 3 to 5 years? Your ambition.\n\nYou are never finished. You are always recalibrating.",
+
+// Slide 8 — Session Mapping
+"Every session this week shaped a dimension of ANCHOR.\n\nThis is not a retrospective exercise. It is proof that the framework emerged naturally from the programme itself.\n\nFrom character strengths to psychological safety. From attention science to circadian rhythms. From critical thinking to the Cisco case. Every insight found its place.",
+
+// Slide 9 — Leadership Tools
+"A framework without practice is just theory.\n\nThese are six tools \u2014 organic, simple, human.\n\nPeer Pulse Check: two minutes, one strength, one growth area. Weekly.\n\nRecognition Rituals: monthly spotlight on who lived the values.\n\nCadence Reviews: weekly rhythm checks. Are we sustainable?\n\nAppreciative Problem-Solving: when did we solve something like this well? What worked?\n\nInitiative Ownership: each person picks one improvement per quarter. Not assigned \u2014 chosen.\n\nWeekly Reflection: fifteen minutes. What went well? What did I learn?\n\nNot bureaucracy. Rituals people want to do.",
+
+// Slide 10 — Destiny
+"Before you implement, diagnose. Six rules. DNA clarity. Growth versus structure. Leadership bottleneck. Cultural transmission. Knowledge systems. People investment.\n\nThen act.\n\n30 days: listen, map strengths, set the baseline.\n\n90 days: install cadence, build safety, clarify governance.\n\n12 months: full deployment. Measure. Recalibrate.\n\nThis is not a project with an end date. It is a permanent operating system.\n\nPORTILAME already lives this \u2014 sports programmes, weekly knowledge sharing, annual reconnection to DNA, structural equity. Not plans. Reality.",
+
+// Slide 11 — Close
+"An anchor doesn\u2019t fight the storm. It holds the ship steady so the crew can navigate.\n\n[Point to QR code]\n\nScan this to explore the full project. Everything is there.\n\nThank you."
+];
+
+var total = 11;
+var current = 1;
+
+// Initialize dots
+var dotsEl = document.getElementById('dots');
+for(var i = 0; i < total; i++){
+var d = document.createElement('span');
+d.dataset.i = i + 1;
+d.onclick = function(){ goTo(+this.dataset.i) };
+dotsEl.appendChild(d);
+}
+
+function goTo(num){
+if(num < 1 || num > total) return;
+current = num;
+document.getElementById('slideImg').src = slideImages[current - 1];
+updateUI();
+}
+
+function go(dir){ goTo(current + dir); }
+
+function updateUI(){
+document.getElementById('currentNum').textContent = current;
+document.getElementById('prevBtn').disabled = current === 1;
+document.getElementById('nextBtn').disabled = current === total;
+dotsEl.querySelectorAll('span').forEach(function(d,i){
+d.className = (i + 1) === current ? 'active' : '';
+});
+document.getElementById('slideTitle').textContent = 'Slide ' + current + ' \u2014 ' + titles[current - 1];
+
+var noteText = notes[current - 1];
+var notesBody = document.getElementById('notesBody');
+if(!noteText){
+notesBody.innerHTML = '<p class="empty">No speaker notes for this slide.</p>';
+} else {
+var paragraphs = noteText.split('\n\n');
+var html = '';
+for(var i = 0; i < paragraphs.length; i++){
+var p = paragraphs[i].trim();
+if(!p) continue;
+if(p.indexOf('[Pause') === 0 || p.indexOf('[Point') === 0){
+html += '<span class="pause">' + p + '</span>';
+} else {
+html += '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+}
+}
+notesBody.innerHTML = html;
+}
+notesBody.scrollTop = 0;
+}
+
+// Initial render
+goTo(1);
+
+document.addEventListener('keydown', function(e){
+if(e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+if(e.key === 'Escape') stopAll();
+});
+
+// ===== TTS ENGINE v2 — Natural Voice =====
+var ttsMode = null; // 'autoplay' | 'podcast' | null
+var ttsVoice = null;
+var timerInterval = null;
+var timerStart = 0;
+
+// Voice quality ranking — prefer neural/premium voices
+function getAmericanVoice(){
+if(ttsVoice) return ttsVoice;
+var voices = speechSynthesis.getVoices();
+if(!voices.length) return null;
+// Tier 1: Premium neural voices (Mac Siri, Chrome, Edge Neural)
+var tier1 = ['Evan','Aaron','Nicky','Google US English','Microsoft Guy Online','Microsoft Aria Online','Microsoft Jenny','Samantha'];
+for(var p=0;p<tier1.length;p++){
+for(var v=0;v<voices.length;v++){
+if(voices[v].name.indexOf(tier1[p])>=0 && voices[v].lang.indexOf('en')===0){ttsVoice=voices[v];console.log('TTS voice:',voices[v].name);return ttsVoice}
+}}
+// Tier 2: Good quality en-US
+var tier2 = ['Alex','Daniel','Fred','Tom'];
+for(var p=0;p<tier2.length;p++){
+for(var v=0;v<voices.length;v++){
+if(voices[v].name.indexOf(tier2[p])>=0 && voices[v].lang.indexOf('en')===0){ttsVoice=voices[v];console.log('TTS voice:',voices[v].name);return ttsVoice}
+}}
+// Tier 3: Any en-US
+for(var v=0;v<voices.length;v++){
+if(voices[v].lang==='en-US'){ttsVoice=voices[v];console.log('TTS voice:',voices[v].name);return ttsVoice}
+}
+// Tier 4: Any English
+for(var v=0;v<voices.length;v++){
+if(voices[v].lang.indexOf('en')===0){ttsVoice=voices[v];console.log('TTS voice:',voices[v].name);return ttsVoice}
+}
+return null;
+}
+
+// Load voices (async on some browsers)
+function initVoices(){
+getAmericanVoice();
+if(speechSynthesis.onvoiceschanged!==undefined){
+speechSynthesis.onvoiceschanged=function(){ttsVoice=null;getAmericanVoice()};
+}
+}
+initVoices();
+
+// ---- TIMER ----
+function startTimer(){
+timerStart = Date.now();
+updateTimerDisplay();
+timerInterval = setInterval(updateTimerDisplay, 1000);
+}
+function stopTimer(){
+if(timerInterval){clearInterval(timerInterval);timerInterval=null}
+document.getElementById('ttsTimer').textContent='';
+}
+function updateTimerDisplay(){
+var elapsed = Math.floor((Date.now()-timerStart)/1000);
+var m = Math.floor(elapsed/60);
+var s = elapsed%60;
+document.getElementById('ttsTimer').textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+
+// ---- SPEAK with natural pauses ----
+function speakText(text, onEnd){
+speechSynthesis.cancel();
+// Replace stage directions with silence markers
+var clean = text
+  .replace(/\[Pause[^\]]*\]/g, '||PAUSE||')
+  .replace(/\[Point[^\]]*\]/g, '');
+
+// Split into segments at paragraph breaks and pause markers
+var segments = clean.split(/\n\n|(?:\|\|PAUSE\|\|)/);
+var queue = [];
+for(var s=0;s<segments.length;s++){
+  var seg = segments[s].trim();
+  if(!seg) continue;
+  // Further split long segments at sentence boundaries (~150 chars for reliability)
+  var sentences = seg.split(/(?<=[.!?])\s+/);
+  var chunk = '';
+  for(var i=0;i<sentences.length;i++){
+    if((chunk+' '+sentences[i]).length > 150 && chunk.length > 0){
+      queue.push({text:chunk.trim(), pause:80});
+      chunk = sentences[i];
+    } else {
+      chunk += (chunk?' ':'')+sentences[i];
+    }
+  }
+  if(chunk.trim()) queue.push({text:chunk.trim(), pause:450}); // longer pause between paragraphs
+}
+
+var idx = 0;
+function speakNext(){
+  if(idx >= queue.length || ttsMode === null){
+    if(onEnd && ttsMode !== null) onEnd();
+    return;
+  }
+  var item = queue[idx];
+  var utt = new SpeechSynthesisUtterance(item.text);
+  var voice = getAmericanVoice();
+  if(voice) utt.voice = voice;
+  utt.lang = 'en-US';
+  utt.rate = 0.9;
+  utt.pitch = 1.0;
+  utt.volume = 1.0;
+  utt.onend = function(){
+    idx++;
+    // Natural pause between segments
+    var pauseMs = (idx < queue.length) ? queue[idx-1].pause : 0;
+    if(pauseMs > 0 && ttsMode !== null){
+      setTimeout(speakNext, pauseMs);
+    } else {
+      speakNext();
+    }
+  };
+  utt.onerror = function(){idx++;speakNext()};
+  // Chrome bug workaround: cancel and resume for long text
+  speechSynthesis.speak(utt);
+}
+speakNext();
+}
+
+// ---- UI UPDATE ----
+function updateTTSButtons(){
+var playBtn=document.getElementById('playBtn');
+var podcastBtn=document.getElementById('podcastBtn');
+var stopBtn=document.getElementById('stopBtn');
+var indicator=document.getElementById('soundIndicator');
+var status=document.getElementById('ttsStatus');
+
+if(ttsMode==='autoplay'){
+  playBtn.classList.add('active');podcastBtn.classList.remove('active');
+  stopBtn.style.display='';indicator.classList.add('active');
+  status.textContent='Slide '+ current +' / '+total;
+} else if(ttsMode==='podcast'){
+  playBtn.classList.remove('active');podcastBtn.classList.add('active');
+  stopBtn.style.display='';indicator.classList.add('active');
+  status.textContent='Podcast';
+} else {
+  playBtn.classList.remove('active');podcastBtn.classList.remove('active');
+  stopBtn.style.display='none';indicator.classList.remove('active');
+  status.textContent='';
+}
+}
+
+// ---- AUTO-PLAY ----
+function toggleAutoPlay(){
+if(ttsMode==='autoplay'){stopAll();return}
+stopAll();
+ttsMode='autoplay';
+updateTTSButtons();
+startTimer();
+autoPlaySlide();
+}
+
+function autoPlaySlide(){
+if(ttsMode!=='autoplay')return;
+document.getElementById('ttsStatus').textContent='Slide '+current+' / '+total;
+var noteText = notes[current-1];
+if(!noteText){
+  setTimeout(function(){
+    if(ttsMode!=='autoplay')return;
+    if(current<total){go(1);setTimeout(autoPlaySlide,800)}
+    else stopAll();
+  },1500);
+  return;
+}
+speakText(noteText, function(){
+  if(ttsMode!=='autoplay')return;
+  if(current<total){
+    setTimeout(function(){go(1);setTimeout(autoPlaySlide,1200)},900);
+  } else {
+    stopAll();
+  }
+});
+}
+
+// ---- PODCAST ----
+var podcastScript = [
+"Welcome to the ANCHOR Framework podcast. This is the story of how a real company's crisis became a framework for holistic leadership.",
+"Let's start with the company. PORTILAME. Portuguese wood construction. Around one hundred people. One hundred families. Growing at forty percent per year for the last several years. Twenty years of history, built on culture, trust, and craftsmanship.",
+"But rapid growth broke something. The founders realized they no longer had the capacity or knowledge to lead what they had built. Too many decisions depended on too few people. The culture that held everything together started to fracture.",
+"This is a common story. Sixty-six percent of European workers have experienced burnout. Seventy percent of change management initiatives fail. Only thirteen percent of employees in Europe are truly engaged at work. The world is changing faster than organizations can adapt.",
+"So we asked a different question. Not what's broken... But when is leadership at its best? Across five organizations, from five different countries, the same five truths kept coming back.",
+"Trust comes first. Always. Given before it is earned. Flexibility unlocks people. Open communication means being honest, not performing confidence. Support structures are built before crisis, not during. And shared purpose reduces uncertainty.",
+"At PORTILAME, this was the DNA from day one. As they say... who likes, comes. Who loves, stays.",
+"Then came the dream. A child of an employee said something at a company event that stopped the room. My hero is my father. When I grow up, I want to be like him. I want to work at PORTILAME.",
+"That is the measure of a truly healthy organization. Not metrics. Not awards. Children who see their parents come home proud and fulfilled. The mission became clear: recover this culture, protect it, and build a framework any organization can use.",
+"From this real organizational pain, we built the ANCHOR framework. Six dimensions. Three games. One anchor.",
+"A, for Awareness. Know yourself. Your strengths. Your biases. Your energy patterns. Character strengths science shows that when people use their top strengths daily, they are six times more likely to be engaged.",
+"N, for Narrative. Tell the real story. Neuroscience proves that storytelling changes brain chemistry. Oxytocin goes up. Cortisol goes down. People follow leaders they believe, not leaders who perform.",
+"C, for Cadence. Protect your rhythms. Circadian science shows that the brain thrives on predictable energy cycles. Weekly rituals. Monthly recognition. Quarterly reviews. Digital discipline.",
+"H, for Humanity. Create belonging. Psychological safety gives people permission to fail, to question, to be real. It is the foundation of trust.",
+"O, for Organization. Build structures that free people, not trap them. Governance that enables, not constrains. Roles clear enough that autonomy is safe.",
+"R, for Resilience. Protect your energy. The science is clear. Metabolic flexibility, physical activity, and recovery are not wellness luxuries. They are leadership infrastructure. Recovery is not weakness. It is strategy.",
+"The Cisco case study, presented by Mario Sebastian, validated this entire approach at enterprise scale. When Cisco's customer experience division in Europe faced declining business, disengagement, and fear... the instinct was to fix. More control. More meetings. Focus on problems. Things got worse.",
+"Then one question changed everything. Tell me about a time things worked really well. The energy shifted immediately. They stopped fixing and started building on strengths. Using Clifton Strengths, weekly check-ins, coaching, and the Appreciative Inquiry cycle. The leader's role shifted from decision maker... to context creator.",
+"The lesson is powerful. Fixing does not equal improving. Solving problems returns you to baseline. Building on strengths takes you beyond it.",
+"To measure progress, we designed a calibration engine with three layers. The Radar Score measures internal health. The Universal KPI benchmarks against the best in the industry. The Galactic KPI sets visionary targets for three to five years out. You are never finished. You are always recalibrating.",
+"But a framework without practice is just theory. So we created six tools. Organic rituals, not bureaucracy.",
+"Peer Pulse Check. Two minutes a week. One strength observed, one growth area. Recognition Rituals. Monthly spotlight on who lived the values. Cadence Reviews. Weekly rhythm checks. Appreciative Problem Solving. When did we solve something similar well? Initiative Ownership. Each person picks one improvement per quarter. Not assigned... chosen. And Weekly Reflection. Fifteen minutes. What went well? What did I learn?",
+"Before implementing any of this, organizations must diagnose. Six rules. DNA clarity. Growth versus structure. Leadership bottleneck. Cultural transmission. Knowledge systems. People investment.",
+"Then the roadmap. Thirty days to listen and set the baseline. Ninety days to install cadence, build safety, and clarify governance. Twelve months for full deployment, measurement, and recalibration.",
+"PORTILAME already lives much of this. Sports programmes. Weekly knowledge sharing. Annual reconnection events. Structural equity. Not plans. Reality. The ANCHOR framework systematizes what was already there.",
+"An anchor doesn't fight the storm. It holds the ship steady so the crew can navigate. That is holistic leadership. Not predicting the waves. Building a ship that stays steady.",
+"Thank you for listening."
+];
+
+var podcastIdx=0;
+function togglePodcast(){
+if(ttsMode==='podcast'){stopAll();return}
+stopAll();
+ttsMode='podcast';
+updateTTSButtons();
+startTimer();
+podcastIdx=0;
+podcastNext();
+}
+
+function podcastNext(){
+if(ttsMode!=='podcast'||podcastIdx>=podcastScript.length){stopAll();return}
+document.getElementById('ttsStatus').textContent='Podcast '+Math.round(((podcastIdx+1)/podcastScript.length)*100)+'%';
+speakText(podcastScript[podcastIdx],function(){
+  podcastIdx++;
+  setTimeout(podcastNext,700);
+});
+}
+
+// ---- STOP ----
+function stopAll(){
+speechSynthesis.cancel();
+ttsMode=null;
+stopTimer();
+updateTTSButtons();
+}
+</script>
+</body>
+</html>

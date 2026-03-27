@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANCHOR Framework</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--red:#C8102E;--navy:#1B2A4A;--navyLight:#253A5E;--cream:#F5EDE0;--bg:#FAFAF8;--text:#1B2A4A;--textLight:#6B7B94;--green:#2D9B5A;--orange:#D4882B;--blue:#2980B9;--radius:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
+/* LOGIN: SPLIT SCREEN */
+.login-screen{display:flex;min-height:100vh}
+.login-left{flex:1;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;position:relative;cursor:pointer;transition:background .3s}
+.login-left:hover{background:#1F3057}
+.login-left .left-tag{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:16px}
+.login-left h2{font-size:28px;font-weight:700;color:var(--cream);text-align:center;letter-spacing:0.5px;line-height:1.3}
+.login-left .left-sub{font-size:12px;color:var(--textLight);margin-top:8px;letter-spacing:0.5px}
+.login-left .left-links{display:flex;flex-direction:column;gap:10px;margin-top:32px;width:220px}
+.login-left .left-links a{display:block;padding:12px 0;border-radius:8px;font-size:13px;font-weight:600;text-align:center;text-decoration:none;letter-spacing:0.5px;transition:all .2s}
+.login-left .left-links .link-slides{background:rgba(255,255,255,0.1);color:var(--cream);border:1.5px solid rgba(255,255,255,0.2)}
+.login-left .left-links .link-slides:hover{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.4)}
+.login-left .left-links .link-browse{background:var(--red);color:white;border:1.5px solid var(--red)}
+.login-left .left-links .link-browse:hover{background:#E01838}
+.login-left .left-credits{position:absolute;bottom:20px;text-align:center;font-size:10px;color:var(--textLight);line-height:1.8;letter-spacing:0.3px}
+.login-left .left-credits .names{font-size:10px;color:rgba(255,255,255,0.4)}
+.login-right{flex:1;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;position:relative}
+.login-right .anchor-icon svg{stroke:var(--navy)}
+.login-right .anchor-label{font-size:28px;font-weight:700;letter-spacing:4px;color:var(--navy);margin-top:14px}
+.login-right .anchor-sub{font-size:12px;color:var(--textLight);margin-top:4px;letter-spacing:0.5px}
+.login-right .pw-area{margin-top:28px;width:200px;text-align:center}
+.login-right .pw-area input{background:#f5f5f5;border:1.5px solid #ddd;color:var(--navy);padding:11px 18px;border-radius:8px;font-size:14px;width:100%;text-align:center;outline:none;margin-bottom:10px}
+.login-right .pw-area input::placeholder{color:#bbb}
+.login-right .pw-area input:focus{border-color:var(--red)}
+.login-right .pw-area .btn-enter{background:transparent;color:var(--textLight);border:1.5px solid #ddd;padding:10px 0;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:1.5px;transition:all .2s;width:100%}
+.login-right .pw-area .btn-enter:hover{border-color:var(--navy);color:var(--navy)}
+.login-right .anchor-choices{display:none;flex-direction:column;gap:10px;margin-top:24px;width:220px}
+.login-right .anchor-choices.show{display:flex}
+.login-right .anchor-choices a,.login-right .anchor-choices button{display:block;padding:12px 0;border-radius:8px;font-size:13px;font-weight:600;text-align:center;text-decoration:none;letter-spacing:0.5px;transition:all .2s;cursor:pointer;width:100%}
+.login-right .anchor-choices .ch-presenter{background:var(--cream);color:var(--navy);border:1.5px solid #e5ddd0}
+.login-right .anchor-choices .ch-presenter:hover{background:var(--navy);color:white;border-color:var(--navy)}
+.login-right .anchor-choices .ch-full{background:var(--navy);color:white;border:1.5px solid var(--navy)}
+.login-right .anchor-choices .ch-full:hover{background:var(--navyLight)}
+.login-right .right-credits{position:absolute;bottom:20px;text-align:center;font-size:10px;color:#bbb;line-height:1.8}
+@media(max-width:700px){.login-screen{flex-direction:column}.login-left,.login-right{min-height:50vh}}
+.app{display:none}
+header{background:var(--navy);padding:16px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;border-bottom:3px solid var(--red)}
+header .logo-sm{display:flex;align-items:center}
+header h1{color:white;font-size:16px;font-weight:600;letter-spacing:1.5px}
+header .subtitle{color:var(--textLight);font-size:11px;letter-spacing:0.5px}
+nav{background:#f4f4f2;border-bottom:1px solid #ddd;padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;position:sticky;top:60px;z-index:99}
+nav button{background:white;border:1.5px solid #ddd;padding:6px 12px;font-size:11px;font-weight:600;color:var(--textLight);cursor:pointer;border-radius:8px;transition:all .2s;text-align:center;line-height:1.3;min-width:0}
+nav button .lbl{display:block;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;opacity:0.7;margin-bottom:2px}
+nav button:hover{border-color:#bbb;background:#fafafa}
+nav button.active{color:white;font-weight:700;border-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+nav button.grp-req{color:var(--navy);border-color:rgba(27,42,74,0.2)}
+nav button.grp-req.active{background:var(--navy);color:white}
+nav button.grp-diag{color:var(--orange);border-color:rgba(212,136,43,0.2)}
+nav button.grp-diag.active{background:var(--orange);color:white}
+nav button.grp-del{color:var(--green);border-color:rgba(45,155,90,0.2)}
+nav button.grp-del.active{background:var(--green);color:white}
+nav button.grp-val{color:var(--red);border-color:rgba(200,16,46,0.2)}
+nav button.grp-val.active{background:var(--red);color:white}
+.tab-legend{display:flex;gap:16px;padding:6px 24px;background:#fafafa;border-bottom:1px solid #eee;font-size:11px;color:var(--textLight)}
+.tab-legend span{display:flex;align-items:center;gap:4px}
+.tab-legend span::before{content:'';width:10px;height:10px;border-radius:2px;display:inline-block}
+.tab-legend .l-req::before{background:var(--navy)}
+.tab-legend .l-diag::before{background:var(--orange)}
+.tab-legend .l-del::before{background:var(--green)}
+.tab-legend .l-val::before{background:var(--red)}
+main{max-width:960px;margin:0 auto;padding:32px 24px 80px}
+.tab{display:none}
+.tab.active{display:block}
+h2{font-size:26px;font-weight:700;color:var(--navy);margin:0 0 8px}
+h3{font-size:19px;font-weight:600;color:var(--navy);margin:28px 0 10px}
+h4{font-size:15px;font-weight:600;color:var(--red);margin:20px 0 8px;letter-spacing:0.5px}
+p{margin-bottom:14px;font-size:15px}
+.subtitle-line{font-size:13px;color:var(--textLight);margin-bottom:28px;letter-spacing:0.3px}
+.card{background:white;border-radius:var(--radius);padding:24px;margin:16px 0;border-left:4px solid var(--red);box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.card.navy{border-left-color:var(--navy)}
+.card.green{border-left-color:var(--green)}
+.card.orange{border-left-color:var(--orange)}
+.card.blue{border-left-color:var(--blue)}
+.card-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.card-text{font-size:14px;color:var(--textLight);line-height:1.6}
+.quote{background:var(--navy);color:white;border-radius:var(--radius);padding:28px 32px;margin:24px 0;position:relative}
+.quote::before{content:'\201C';font-size:64px;color:var(--red);position:absolute;top:8px;left:16px;font-family:Georgia,serif;line-height:1}
+.quote p{font-size:16px;font-style:italic;color:var(--cream);padding-left:24px;margin:0}
+.quote .attribution{font-size:12px;color:var(--textLight);padding-left:24px;margin-top:10px;font-style:normal}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.badge{display:inline-block;background:var(--red);color:white;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.5px}
+.badge.navy{background:var(--navy)}
+.badge.green{background:var(--green)}
+.badge.orange{background:var(--orange)}
+.badge.blue{background:var(--blue)}
+.timeline{position:relative;padding-left:28px;margin:20px 0}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--red);opacity:0.3}
+.timeline-item{position:relative;margin-bottom:20px}
+.timeline-item::before{content:'';position:absolute;left:-24px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--red)}
+.timeline-item .year{font-size:13px;font-weight:700;color:var(--red);margin-bottom:2px}
+.timeline-item p{font-size:14px;color:var(--textLight);margin:0}
+.doc-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+.doc-table th{background:var(--navy);color:white;padding:10px 14px;text-align:left;font-weight:600}
+.doc-table td{padding:10px 14px;border-bottom:1px solid #eee}
+.doc-table tr:hover td{background:rgba(200,16,46,0.03)}
+.anchor-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:24px 0}
+@media(max-width:768px){.anchor-grid{grid-template-columns:repeat(3,1fr)}}
+.anchor-card{background:var(--navy);border-radius:10px;padding:18px 10px;text-align:center}
+.anchor-card .letter{font-size:36px;font-weight:700;color:var(--red);font-family:Georgia,serif}
+.anchor-card .word{font-size:9px;font-weight:600;color:var(--cream);letter-spacing:1.5px;margin-top:6px}
+.anchor-card .desc{font-size:11px;color:var(--textLight);margin-top:4px}
+.games-bar{display:flex;gap:6px;margin:16px 0}
+.games-bar div{padding:10px;border-radius:8px;text-align:center;font-size:11px;font-weight:600;color:white;letter-spacing:1px}
+.games-bar .inner{background:var(--red);flex:2}
+.games-bar .outer{background:var(--orange);flex:3}
+.games-bar .long{background:var(--green);flex:1}
+.phase-card{background:white;border-radius:var(--radius);padding:20px;border-top:4px solid var(--blue)}
+.phase-card.p2{border-top-color:var(--orange)}
+.phase-card.p3{border-top-color:var(--green)}
+.phase-card h4{margin-top:0}
+.phase-card ul{list-style:none;padding:0;margin:10px 0}
+.phase-card li{font-size:13px;color:var(--textLight);padding:5px 0;padding-left:18px;position:relative}
+.phase-card li::before{content:'\2192';position:absolute;left:0;color:var(--red)}
+.radar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+@media(max-width:768px){.radar-grid{grid-template-columns:repeat(2,1fr)}}
+.radar-item{background:white;border-radius:10px;padding:16px;border-left:4px solid var(--green);box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.radar-item.amber{border-left-color:var(--orange)}
+.radar-item .val{font-size:28px;font-weight:700;font-family:Georgia,serif}
+.radar-item .val.g{color:var(--green)}
+.radar-item .val.a{color:var(--orange)}
+.radar-item .label{font-size:10px;font-weight:600;color:var(--textLight);letter-spacing:1.5px;margin-top:4px}
+.day-header{background:var(--navy);border-radius:var(--radius);padding:24px 28px;margin:0 0 20px;color:white}
+.day-header h2{color:white;margin:0}
+.day-header .day-theme{color:var(--cream);font-size:14px;margin-top:4px}
+.session-card{background:white;border-radius:10px;padding:18px;margin:12px 0;border-left:3px solid var(--red)}
+.session-card .prof{font-size:13px;font-weight:600;color:var(--navy)}
+.session-card .topic{font-size:14px;color:var(--textLight);margin-top:4px}
+.prompt-box{background:var(--cream);border-radius:10px;padding:20px;margin:16px 0}
+.prompt-box h4{color:var(--navy);margin-top:0}
+.prompt-box p{font-size:14px;color:var(--navy);margin-bottom:8px}
+.tool-card{background:white;border-radius:10px;padding:16px;margin:10px 0;border:1px solid #e8e8e8}
+.tool-card h4{margin-top:0;color:var(--navy)}
+.tool-card p{font-size:13px;color:var(--textLight);margin-bottom:0}
+.kpi-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.kpi{background:var(--navy);color:white;border-radius:8px;padding:10px 16px;font-size:12px}
+.kpi strong{color:var(--red);font-size:16px;display:block}
+.download-btn{display:inline-block;background:var(--red);color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:0.5px;margin:16px 0}
+.download-btn:hover{opacity:0.9}
+</style>
+</head>
+<body>
+
+<!-- LOGIN: SPLIT SCREEN -->
+<div class="login-screen" id="loginScreen">
+
+<!-- LEFT: ACADEMIC / FINAL PROJECT -->
+<div class="login-left">
+<div class="left-tag">Final Project</div>
+<h2>Group 3</h2>
+<div class="left-sub">Leading Through Change &mdash; Appreciative Inquiry</div>
+<div class="left-links">
+<a class="link-slides" href="academic_presenter.html">SLIDES + SPEAKER NOTES</a>
+</div>
+<div class="left-credits">
+IE Business School &times; Porto Business School<br>
+<span class="names">Alejandra &middot; Devin &middot; Dominik &middot; Pedro &middot; Teresa</span>
+</div>
+</div>
+
+<!-- RIGHT: ANCHOR (password protected) -->
+<div class="login-right">
+<div class="anchor-icon"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#1B2A4A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg></div>
+<div class="anchor-label">ANCHOR</div>
+<div class="anchor-sub">Holistic Leadership Framework</div>
+
+<div class="pw-area" id="pwArea">
+<input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+<button class="btn-enter" onclick="doLogin()">ENTER</button>
+</div>
+
+<div class="anchor-choices" id="anchorChoices">
+<a class="ch-presenter" href="presenter.html">Slide Deck + Speaker Notes</a>
+<button class="ch-full" onclick="enterFull()">Complete Project</button>
+</div>
+
+<div class="right-credits">
+March 2026
+</div>
+</div>
+
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+<header>
+<div class="logo-sm"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8102E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg></div>
+<div><h1>ANCHOR FRAMEWORK</h1><div class="subtitle">Holistic Leadership: From Purpose to Impact &mdash; IE Business School Madrid, March 2026</div></div>
+</header>
+
+<nav id="nav">
+<button class="grp-req active" onclick="showTab('assignment')"><span class="lbl">Brief</span>Assignment</button>
+<button class="grp-req" onclick="showTab('documents')"><span class="lbl">Brief</span>Sources</button>
+<button class="grp-diag" onclick="showTab('report')"><span class="lbl">Analysis</span>Full Report</button>
+<button class="grp-diag" onclick="showTab('day1')"><span class="lbl">Insights</span>Day 1</button>
+<button class="grp-diag" onclick="showTab('day2')"><span class="lbl">Insights</span>Day 2</button>
+<button class="grp-diag" onclick="showTab('day3')"><span class="lbl">Insights</span>Day 3</button>
+<button class="grp-diag" onclick="showTab('day4')"><span class="lbl">Insights</span>Day 4</button>
+<button class="grp-diag" onclick="showTab('day5')"><span class="lbl">Insights</span>Day 5</button>
+<button class="grp-del" onclick="showTab('tools')"><span class="lbl">Deliver</span>Tools</button>
+<button class="grp-del" onclick="showTab('roadmap')"><span class="lbl">Deliver</span>Roadmap</button>
+<button class="grp-del" onclick="showTab('presentation')"><span class="lbl">Deliver</span>Slide Deck</button>
+<button class="grp-del" onclick="showTab('storytelling')"><span class="lbl">Deliver</span>Story Telling</button>
+<button class="grp-val" onclick="showTab('validation')"><span class="lbl">QA</span>Validation</button>
+</nav>
+
+<main>
+
+<!-- TAB: THE ASSIGNMENT -->
+<div class="tab active" id="tab-assignment">
+<h2>The Assignment</h2>
+<p class="subtitle-line">What IE University expects from the group final work</p>
+
+<div class="card navy">
+<div class="card-title">Programme</div>
+<div class="card-text">Holistic Leadership: From Purpose to Impact &mdash; Porto Business School Exchange at IE Business School, March 23-27, 2026. Organized by the IE Center for Health and Well-being. Lead Professor: Dr. Silvia Centeno Rodriguez, Ph.D.</div>
+</div>
+
+<h3>The Leadership Design Challenge</h3>
+<p>This is not an academic exercise. It is a <strong>leadership design challenge</strong>. The purpose is to translate insights from the five-day programme into a practical, relevant, and realistic leadership proposal that could genuinely be applied in today's organizations.</p>
+
+<div class="card">
+<div class="card-title">Our Chosen Challenge</div>
+<div class="card-text" style="font-size:16px;font-weight:600;color:var(--navy)">Leading effectively in times of constant change and uncertainty</div>
+</div>
+
+<h3>Methodological Framework: Appreciative Inquiry (4-D Cycle)</h3>
+<p>The project must be structured using the Appreciative Inquiry cycle. Instead of starting from deficits, we start from what already works &mdash; what gives life to organizations at their best &mdash; and build forward.</p>
+
+<div class="grid-2">
+<div class="card"><div class="card-title">DISCOVER</div><div class="card-text">What already works when people and organizations are at their best</div></div>
+<div class="card navy"><div class="card-title">DREAM</div><div class="card-text">What might be possible if leadership were truly holistic</div></div>
+<div class="card green"><div class="card-title">DESIGN</div><div class="card-text">What leadership practices and choices would make the biggest difference</div></div>
+<div class="card orange"><div class="card-title">DESTINY</div><div class="card-text">What concrete actions could realistically be taken</div></div>
+</div>
+
+<h3>Key Requirements</h3>
+<div class="card">
+<div class="card-text">
+<strong>Think systemically</strong> &mdash; beyond a single company. <strong>Design principles and practices</strong> that are transferable across contexts. <strong>Ground the proposal</strong> in real organizational experience. <strong>Integrate insights</strong> from each day of the programme into the AI framework. The final presentation should reflect both a <strong>coherent group vision</strong> and <strong>diverse real-world experiences</strong>.
+</div>
+</div>
+
+<h3>Final Deliverable</h3>
+<p>Format: Free (slides, visual canvas, storytelling). Length: 7 minutes per group. Friday, March 27, 15:10-16:30.</p>
+
+<h3>Evaluation Criteria</h3>
+<div class="grid-2">
+<div class="card"><div class="card-title">Relevance and Realism</div><div class="card-text">Can this actually be applied?</div></div>
+<div class="card"><div class="card-title">Integration of Appreciative Inquiry</div><div class="card-text">Is the 4-D cycle structurally present?</div></div>
+<div class="card"><div class="card-title">Quality and Depth of Insights</div><div class="card-text">Not surface-level &mdash; real organizational depth</div></div>
+<div class="card"><div class="card-title">Integration of Programme Learnings</div><div class="card-text">Are each day's sessions visibly woven in?</div></div>
+</div>
+<div class="card navy" style="margin-top:8px">
+<div class="card-title">Core Question to Answer</div>
+<div class="card-text" style="font-style:italic;color:#111">"How can holistic leadership, grounded in Appreciative Inquiry, be realistically applied to address this leadership challenge in today's organizations?"</div>
+</div>
+</div>
+
+<!-- TAB: FULL REPORT -->
+<div class="tab" id="tab-report">
+<h2>Full Report</h2>
+<p class="subtitle-line">The PORTILAME ANCHOR Framework &mdash; From real organizational pain to universal leadership design</p>
+
+<h3>The Story Line</h3>
+<p>This framework is grounded in a real company &mdash; <a href="https://www.portilame.com" target="_blank" style="color:var(--red);font-weight:600">PORTILAME</a>, a Portuguese wood construction company with 20+ years of history. What follows is not theory. It is lived experience, diagnosed problems, and the courage to restructure everything while the company was still growing at 40% per year.</p>
+
+<div class="quote">
+<p>In the company I have some assets &mdash; equipment and machines &mdash; that cost a lot of money, from 500 euros to 2 million euros for a single machine. Some of them always depend on a specialist, extremely hard to recruit or train, which scared me and made me feel insecure. But the truth is, I became much less worried when I realized that my most expensive asset is people &mdash; who, by the same measure, cost around 20 million euros &mdash; and they are also the hardest "machine" to fine-tune. The user manual I have and use today, tomorrow is already obsolete.</p>
+<div class="attribution">&mdash; Founder &amp; Partner, PORTILAME</div>
+</div>
+
+<h3>The DNA of PORTILAME</h3>
+<p>PORTILAME was founded in 2004 by two partners with deep alignment: shared values, complementary skills, and a relationship built on trust before the first business decision was made. This founding DNA &mdash; ethical governance, human centrality, quality obsession, and long-term thinking &mdash; became the invisible architecture that sustained the company through two decades of growth.</p>
+
+<div class="quote">
+<p>Who likes, comes. Who loves, stays.</p>
+<div class="attribution">&mdash; PORTILAME founding principle (original: "Quem gosta vem. Quem ama fica.")</div>
+</div>
+
+<div class="card">
+<div class="card-title">Company Values (Operating System, Not Decoration)</div>
+<div class="card-text">Five values lived in decisions, not written on walls: <strong>Convergence</strong> (alignment), <strong>Know-how</strong> (mastery), <strong>Progress</strong> (forward movement), <strong>Empathy</strong> (human connection), <strong>Sustainability</strong> (long-term thinking).</div>
+</div>
+
+<div class="quote">
+<p>Being PORTILAME is carrying a spirit that cannot be learned from a manual, bought at a fair, or imitated with empty speeches. It is living with that improbable mix of naive courage, humor in the hardest moments, and an almost stubborn determination that turns obstacles into chapters of a story worth telling and retelling with pride.</p>
+<div class="attribution">&mdash; "Being PORTILAME" manifesto, KickOff 2026</div>
+</div>
+
+<div class="quote">
+<p>Family. There are things that cannot be explained. They are felt. The most important force: people! The most important machine and the hardest to fine-tune! Around 100 colleagues, around 100 families, immense responsibility. Their children... Some could be our parents. Some could be our children.</p>
+<div class="attribution">&mdash; Founder &amp; Partner, KickOff 2026</div>
+</div>
+
+<div class="quote">
+<p>Wearing the jersey is not a slogan. It is a feeling. Here, we want those who arrived yesterday to feel the same as those who have been here for years.</p>
+<div class="attribution">&mdash; KickOff 2026</div>
+</div>
+
+<h3>The Timeline &mdash; Growth and the Fractures It Created</h3>
+<div class="timeline">
+<div class="timeline-item"><div class="year">2004</div><p>Two founders. Five employees. Artisanal workshop. A shared dream built on trust, ethics, and wood.</p></div>
+<div class="timeline-item"><div class="year">2004-2019</div><p>40% annual growth. Expansion to 100+ employees, 400+ projects across 18 countries. Revenue trajectory toward 25M euros.</p></div>
+<div class="timeline-item"><div class="year">2019-2020</div><p>The inflection point. Rapid growth started fracturing the DNA that had built the company. What got us here would not get us there. But the founders did not yet realize it.</p></div>
+<div class="timeline-item"><div class="year">2020</div><p>Internal diagnosis: 6 core organizational problems formally identified. The honest confrontation with reality began.</p></div>
+<div class="timeline-item"><div class="year">2022-2024</div><p>The awakening. The founders finally realized &mdash; two years after the diagnosis &mdash; that they no longer had the availability, capacity, or knowledge to manage a company that had grown this fast. The hardest act: lowering pride, elevating humility.</p></div>
+<div class="timeline-item"><div class="year">2025-2026</div><p>Founders step back from operations. Professional C-level and middle management hired for Human Skills. Governance restructured. Three mission-critical departments created: <strong>Quality</strong> (ISO 9001, ISO 14001, FSC certifications achieved in 2025), <strong>People &amp; Culture</strong> (harmonious processes, listening, involving, supporting people), and <strong>Brand &amp; Communication</strong> (adequate, attentive internal communication). 8.1M euro modular factory investment. Digital transformation. Running against time to recover the DNA.</p></div>
+</div>
+
+<h3>The 6 Diagnosed Problems (2020)</h3>
+<p>These are not theoretical. They were formally identified through internal assessment. Every growing organization faces variations of these same fractures.</p>
+
+<div class="card"><div class="card-title">1. Loss of Invisible Control</div><div class="card-text">Before: decisions were fast, information flowed directly, problems were felt early. After growth: information distorts across hierarchy, problems arrive late or filtered, decisions become slower or political. The risk: believing you have control when you no longer do.</div></div>
+<div class="card navy"><div class="card-title">2. Ambiguity of Responsibilities</div><div class="card-text">Org chart boxes existed but functions were unclear. Functions existed but authority was not assumed. Authority existed but there was no accountability. Result: grey zones, "not my problem" culture, decisions stuck in limbo.</div></div>
+<div class="card orange"><div class="card-title">3. Leadership Bottleneck</div><div class="card-text">The company grows but the leader becomes the unintentional single point of failure. Every critical decision routes back to the same person. Classic pattern: the organization scales but the founder becomes the bottleneck.</div></div>
+<div class="card"><div class="card-title">4. Silent Cultural Desalignment</div><div class="card-text">Culture was transmitted by proximity, not by system. New hierarchical layers could not learn culture by osmosis. The same message no longer meant the same thing to everyone. Culture stopped being lived and started being interpreted.</div></div>
+<div class="card blue"><div class="card-title">5. Operational Complexity Explosion</div><div class="card-text">More projects, more teams, more interfaces. Small errors multiplied exponentially. The system stopped being robust and became fragile. Communication failures became critical.</div></div>
+<div class="card green"><div class="card-title">6. Knowledge Trapped in People</div><div class="card-text">Too much knowledge in heads, not in systems. Processes not formalized. Dependency on "heroes." Organizational intelligence was individual, not institutional. Scale was limited and risk was high.</div></div>
+
+<h3>The Founders' Humility</h3>
+<div class="quote">
+<p>Only when we &mdash; the founders and leaders &mdash; became aware that we no longer had the availability, capacity, and knowledge to manage a company that had grown so rapidly and continues to grow, when we lowered our pride and elevated our humility, did we gain the clarity to structure and hire intermediate leaders with great Human Skills, so that we could rise to the challenge. In truth, this rapid growth had been shaking PORTILAME's DNA for seven years, but we only realized it two years ago. Now we are racing against time.</p>
+<div class="attribution">&mdash; Founder &amp; Partner, PORTILAME</div>
+</div>
+
+<h3>The Dream We Truly Believe In</h3>
+<div class="card">
+<div class="card-text">We want every proud face of every one of our people to tell us that their children say: &ldquo;My hero is my father! When I grow up, I want to be like him: work at PORTILAME!&rdquo; That is the ultimate proof of a healthy organization. Not metrics. Not awards. Children who see their parents come home fulfilled, proud, and inspired. Every employee as a leader from their position. The same framework &mdash; the same DNA &mdash; must live inside every person, from the founder to the newest employee. Lateral leadership, not vertical. An organic framework so light that people want to carry it, like identity, not obligation.</div>
+</div>
+
+<div class="quote">
+<p>I Am PORTILAME. We Are PORTILAME. Being PORTILAME is acting with integrity, ethics, and empathy. Building with people, for people, leaving a legacy that endures through time.</p>
+<div class="attribution">&mdash; KickOff 2026</div>
+</div>
+
+<h3>The ANCHOR Framework</h3>
+<p>Extracted from PORTILAME's real transformation and designed to be universal &mdash; adoptable by any organization.</p>
+
+<div class="card" style="margin-bottom:20px;border-left:4px solid var(--red)">
+<div class="card-title">Why "ANCHOR"?</div>
+<div class="card-text">The name emerged from the group's core question: how do organizations lead through constant change? An anchor does not resist the storm &mdash; it holds the ship steady so the crew can navigate. That metaphor became the framework's identity. Each letter maps to a dimension that emerged from synthesizing the programme's twelve sessions into an integrated leadership model: <strong>A</strong>wareness, <strong>N</strong>arrative, <strong>C</strong>adence, <strong>H</strong>umanity, <strong>O</strong>rganization, <strong>R</strong>esilience. The ANCHOR framework is an original creation by Group 3, grounded in Appreciative Inquiry and validated against real organizational evidence from PORTILAME.</div>
+</div>
+
+<div class="anchor-grid">
+<div class="anchor-card"><div class="letter">A</div><div class="word">AWARENESS</div><div class="desc">Self &amp; System</div></div>
+<div class="anchor-card"><div class="letter">N</div><div class="word">NARRATIVE</div><div class="desc">Purpose &amp; Meaning</div></div>
+<div class="anchor-card"><div class="letter">C</div><div class="word">CADENCE</div><div class="desc">Rhythms &amp; Rituals</div></div>
+<div class="anchor-card"><div class="letter">H</div><div class="word">HUMANITY</div><div class="desc">People-First</div></div>
+<div class="anchor-card"><div class="letter">O</div><div class="word">ORGANIZATION</div><div class="desc">Adaptive Structure</div></div>
+<div class="anchor-card"><div class="letter">R</div><div class="word">RESILIENCE</div><div class="desc">Sustainable Energy</div></div>
+</div>
+
+<div class="games-bar">
+<div class="inner">INNER GAME (A+N)</div>
+<div class="outer">OUTER GAME (C+H+O)</div>
+<div class="long">LONG GAME (R)</div>
+</div>
+<p style="font-size:13px;color:var(--textLight);text-align:center">The same framework must live inside every person in the organization. Everyone is a leader from their position.</p>
+
+<h3>Organizational Radar</h3>
+<p>Seven dimensions measured continuously. Six internal, one external. The Radar is not primarily a self-assessment tool &mdash; it is built on <strong>indirect behavioural signals</strong> captured from daily digital systems: punctuality patterns, non-conformity records, absenteeism trends, communication frequency, project completion rates, and other operational data that reveal organizational health without asking anyone to fill a survey. These behavioural patterns form the foundation. They are then enriched with <strong>360-degree direct evaluation</strong> (peers, leaders, cross-functional) and only lastly complemented by <strong>self-assessment</strong>. The composite score is segmented by dimension, team, and trend &mdash; enabling <strong>predictive alerts</strong> that anticipate risks before they become problems. Prevention, not cure.</p>
+<div class="radar-grid">
+<div class="radar-item amber"><div class="val a">6.2</div><div class="label">AWARENESS <span style="font-size:10px;color:var(--textLight)">(Being)</span></div></div>
+<div class="radar-item amber"><div class="val a">6.5</div><div class="label">NARRATIVE <span style="font-size:10px;color:var(--textLight)">(Trust)</span></div></div>
+<div class="radar-item"><div class="val g">7.1</div><div class="label">CADENCE <span style="font-size:10px;color:var(--textLight)">(Health)</span></div></div>
+<div class="radar-item"><div class="val g">7.8</div><div class="label">HUMANITY <span style="font-size:10px;color:var(--textLight)">(Belonging)</span></div></div>
+<div class="radar-item"><div class="val g">7.4</div><div class="label">ORGANIZATION <span style="font-size:10px;color:var(--textLight)">(Growth)</span></div></div>
+<div class="radar-item amber"><div class="val a">5.8</div><div class="label">RESILIENCE <span style="font-size:10px;color:var(--textLight)">(Mindfulness)</span></div></div>
+<div class="radar-item" style="border-left:4px solid var(--navy);background:linear-gradient(135deg,#f0f4f8,#e8edf3)"><div class="val g">7.0</div><div class="label">HORIZON</div></div>
+</div>
+<p style="font-size:12px;color:var(--textLight);text-align:center">GREEN &ge; 7.0 &nbsp; AMBER 5.5-7.0 &nbsp; RED &lt; 5.5 &nbsp; Declining trend triggers alert regardless of absolute value</p>
+<p style="font-size:11px;color:var(--textLight);text-align:center;margin-top:4px"><strong>Data hierarchy:</strong> 1. Indirect behavioural signals (digital systems) &rarr; 2. 360&deg; direct evaluation &rarr; 3. Self-assessment &rarr; Composite predictive score</p>
+
+<div class="card navy" style="margin-top:16px">
+<div class="card-title">7th Dimension: HORIZON &mdash; External Benchmarking &amp; Future Calibration</div>
+<div class="card-text" style="color:#111">
+The six internal dimensions measure who we are. HORIZON measures where we stand relative to the world &mdash; and where the world is going. It connects every internal people factor evaluated in this framework with external reality: how other organizations assess and develop their people, what criteria they use, how employees' expectations of well-being and quality of life are evolving, and what pain points future talent wants to see resolved. HORIZON provides the signal of what "others expect" and what "our future employees will demand."
+</div>
+</div>
+
+<h3>KPI Scoring Architecture</h3>
+<p>Three integrated scoring layers that ensure the ANCHOR Framework remains calibrated, competitive, and visionary over time.</p>
+
+<div class="grid-3">
+<div class="phase-card">
+<span class="badge">LAYER 1</span>
+<h4>Radar Score (Internal)</h4>
+<p>Composite of the 7 dimensions. Built primarily on indirect behavioural data from digital systems (punctuality, non-conformities, absenteeism, communication patterns), enriched with 360&deg; evaluation and self-assessment. Segmented and predictive &mdash; anticipating care needs before they become crises. Quarterly cadence. The foundation for all decisions.</p>
+</div>
+<div class="phase-card p2">
+<span class="badge orange">LAYER 2</span>
+<h4>Universal KPI</h4>
+<p>Benchmarking score that cross-references internal Radar data with external intelligence: industry standards, competitor practices, employee expectation surveys, well-being trend reports, and talent market signals. Ensures the organization <strong>at minimum covers</strong> what the best in the market are doing. A score below parity triggers recalibration of internal targets.</p>
+</div>
+<div class="phase-card p3">
+<span class="badge green">LAYER 3</span>
+<h4>Galactic KPI (Visionary)</h4>
+<p>Predictive, forward-looking target built on cross-referenced and transversal data: workforce demographic shifts, generational expectations, emerging well-being science, regulatory trends, and AI-augmented pattern recognition. The Galactic KPI <strong>anticipates</strong> what the Universal KPI will become in 2-3 years. It sets the aspirational meta-target that keeps the organization at the vanguard &mdash; not reacting to change, but arriving before it.</p>
+</div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<div class="card-title">How the Three Layers Work Together</div>
+<div class="card-text">
+<strong>Radar Score</strong> answers: "How healthy are we right now?"<br>
+<strong>Universal KPI</strong> answers: "Are we at least as good as the best out there?"<br>
+<strong>Galactic KPI</strong> answers: "Are we ready for what the world will expect next?"<br><br>
+The gap between Radar and Universal triggers <strong>corrective action</strong>. The gap between Universal and Galactic triggers <strong>innovation and anticipation</strong>. Together, they create a dynamic calibration system that ensures every dimension of the ANCHOR Framework has objectives adapted to future realities while always staying ahead.
+</div>
+</div>
+
+<h3>PORTILAME Well-Being Ecosystem &mdash; The Living Proof</h3>
+<p>The ANCHOR framework is not theoretical. PORTILAME already implements a comprehensive well-being ecosystem that maps directly to the framework&rsquo;s dimensions. These practices demonstrate that holistic leadership is operational, measurable, and impactful.</p>
+
+<div class="card green">
+<div class="card-title">Physical Vitality Programme</div>
+<div class="card-text">
+<strong>External community support:</strong> Direct and indirect financial funding for sport across all age groups &mdash; athletics, football, padel, trail running, and more.<br>
+<strong>Internal employee support:</strong> Financial backing for employees who compete regularly (cycling, padel, futsal, etc.), full branded equipment with company identity (&ldquo;EU SOU PORTILAME&rdquo;), and complete backoffice promotion of achievements, values, and efforts.<br>
+<strong>Facility partnerships:</strong> Weekly reserved slots at nearby padel complex and gym, plus discounts for personal enrolment &mdash; lowering every barrier to regular physical activity.<br>
+<strong>ANCHOR mapping:</strong> R (Resilience) &mdash; biological infrastructure for sustained performance. H (Humanity) &mdash; belonging made visible through shared identity.
+</div>
+</div>
+
+<div class="card navy">
+<div class="card-title">Knowledge &amp; Identity Rituals</div>
+<div class="card-text" style="color:#111">
+<strong>Call Semanal:</strong> Every Wednesday after lunch, 30 min (25&rsquo; + 5&rsquo; Q&amp;A), online, voluntary. Any employee presents their perspective &mdash; vision, strategy, difficulties, processes, responsibilities. Prepared with digital and oral content. Recorded and stored for future reference.<br>
+<strong>Annual Kick-Off:</strong> Full-company event where founders, C-level, and leaders present the year ahead &mdash; linked to previous results but rooted in DNA stories connecting colleagues across all levels. Emotional, purposeful, unifying.<br>
+<strong>ANCHOR mapping:</strong> N (Narrative) &mdash; every voice has a stage. A (Awareness) &mdash; cross-functional understanding. C (Cadence) &mdash; weekly and annual rhythms.
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Structural Equity &amp; Feedback Culture</div>
+<div class="card-text">Clear role definitions, well-structured salary levels, transparency and equity in duties and benefits. Constructive feedback culture. Teams led by leaders who act as moderators and orientators. These structural elements make well-being sustainable rather than performative.</div>
+</div>
+
+<div class="card orange">
+<div class="card-title">Community &amp; Academic Engagement</div>
+<div class="card-text">Support for local NGOs, sponsorship of intervention artists, continuous relationship with schools, professional schools, and universities &mdash; sharing experiences, materials, and knowledge; offering students the opportunity to experience PORTILAME and potentially join. Creates desire, cultivates the brand, evidences pride, validates the DNA.</div>
+</div>
+
+<h3>Diagnostic Rules (Universal)</h3>
+<p>Before implementing the ANCHOR framework, any organization must run a diagnostic:</p>
+<div class="card">
+<div class="card-text">
+<strong>1. DNA Clarity</strong> &mdash; Are the founding values still alive and actionable?<br>
+<strong>2. Growth vs. Structure Gap</strong> &mdash; Has the organization outgrown its governance model?<br>
+<strong>3. Leadership Bottleneck Test</strong> &mdash; How many critical decisions require the founder/CEO?<br>
+<strong>4. Cultural Transmission</strong> &mdash; Can a new employee learn the culture without founders?<br>
+<strong>5. Knowledge Institutionalization</strong> &mdash; Is intelligence in systems or in heads?<br>
+<strong>6. People Investment</strong> &mdash; Is human development proportional to equipment investment?
+</div>
+</div>
+</div>
+
+<!-- TAB: SOURCE DOCUMENTS -->
+<div class="tab" id="tab-documents">
+<h2>Source Documents</h2>
+<p class="subtitle-line">Every claim in this project is grounded in real organizational documents</p>
+
+<h3>PORTILAME Internal Documents</h3>
+<table class="doc-table">
+<tr><th>Document</th><th>Content</th></tr>
+<tr><td>Internal Diagnosis 2020</td><td>6 core organizational problems: loss of control, role ambiguity, leadership bottleneck, cultural desalignment, complexity explosion, knowledge dependency</td></tr>
+<tr><td>ComEx Governance Protocol</td><td>Dual-tier model (Board vs. Executive Committee), percentage-based decisions, 48h counter-proposal, unanimity protocol, escalation criteria</td></tr>
+<tr><td>Board vs. ComEx Regulation</td><td>Strategic vs. operational authority. Thresholds: contracts &gt;1M, investments &gt;50k reserved for Board</td></tr>
+<tr><td>Function Descriptions</td><td>Complete role definitions for all C-level and sub-functions, including "what each role does NOT do"</td></tr>
+<tr><td>Process Flowcharts</td><td>Full value chain: opportunity, analysis, proposal, contract, production, delivery, post-sale, improvement</td></tr>
+<tr><td>Organizational Charts (V7-V15)</td><td>Progressive evolution of organizational structure across multiple iterations</td></tr>
+<tr><td>Performance Evaluation Model</td><td>4 cascading dimensions: Loyalty (tenure-based), Individual Performance, Team Performance, Company Results. Cascading scores ensure vertical alignment</td></tr>
+<tr><td>Organizational Barometer</td><td>Continuous health monitoring tool for well-being measurement</td></tr>
+<tr><td>AI Governance Policy</td><td>AI as support tool, prohibited uses, verification rules, department boundaries. EU AI Act aligned</td></tr>
+<tr><td>Digital Transformation Roadmap</td><td>SIG 2026: ERP (Dynamics 365), MES, WMS, BPM. 5-year AI maturity path (Level 2 to Level 9)</td></tr>
+<tr><td>Industrial Transformation</td><td>8.1M euro modular factory. Three product lines. Capacity: 3,000 to 7,000 m3/year</td></tr>
+<tr><td>Brand Guidelines</td><td>Values: Convergence, Know-how, Progress, Empathy, Sustainability. Positioning: "Professional, Reference, Reliable"</td></tr>
+</table>
+
+<h3>KickOff 2026 Leadership Presentations (8 Leaders)</h3>
+<table class="doc-table">
+<tr><th>Leader / Role</th><th>Key Content</th></tr>
+<tr><td>Founder / Partner</td><td>"Who likes, comes. Who loves, stays." Family, belonging, 20M-euro people asset insight. "Being PORTILAME" manifesto. Menti poll. Emotional anchoring of the entire organization</td></tr>
+<tr><td>Founder / Partner</td><td>Strategic vision, growth trajectory, technical excellence, sustainability commitment</td></tr>
+<tr><td>CEO</td><td>CEO manifesto: operational leadership vision, cultural alignment, execution commitment. Translating founders' DNA into daily management reality</td></tr>
+<tr><td>COO</td><td>Operational complexity, factory commissioning, PRR compliance, overextension risk</td></tr>
+<tr><td>CFO</td><td>Financial governance, HR structuring, administrative formalization</td></tr>
+<tr><td>CMO</td><td>Market positioning, brand strategy, 18-country client relationships</td></tr>
+<tr><td>CTO</td><td>Digital transformation, SIG 2026, AI roadmap, BIM/CAD</td></tr>
+<tr><td>Quality Director</td><td>ISO 9001, ISO 14001, FSC certifications (achieved 2025), QAS, sustainability (124 tons wood waste reused)</td></tr>
+<tr><td>Production Director</td><td>Factory transition artisanal to industrial, modular systems, training</td></tr>
+</table>
+
+<h3>Personal Leadership Profile</h3>
+<table class="doc-table">
+<tr><th>Assessment</th><th>Results</th></tr>
+<tr><td>VIA Character Strengths</td><td>Top 5: Honesty, Love of Learning, Fairness, Hope, Forgiveness</td></tr>
+<tr><td>Wingfinder</td><td>Emotional, Focused, Modest, Patient</td></tr>
+<tr><td>Reflected Best Self</td><td>Protector-Builder archetype</td></tr>
+<tr><td>Personal Brand House</td><td>Strategic Builder &amp; Organizational Architect</td></tr>
+<tr><td>"My Future Self"</td><td>From "act fast and anxious" to "stay with complexity until clarity emerges"</td></tr>
+</table>
+
+<h3>IE Programme Materials</h3>
+<table class="doc-table">
+<tr><th>Day</th><th>Material</th><th>Content</th></tr>
+<tr><td>Day 1</td><td>Silvia Centeno &mdash; Holistic Leadership Through AI</td><td>Appreciative Inquiry 4-D cycle, business case for well-being, burnout data (66% Europeans, Portugal #1 EU), Future of Jobs Report 2025, Top 100 Well-being Companies outperform S&amp;P 500</td></tr>
+<tr><td>Day 1</td><td>Mar Hurtado de Mendoza &mdash; Character Strengths</td><td>VIA Classification (Seligman/Peterson), 6x engagement when using strengths daily (Gallup), strengths-based leadership vs. deficit correction</td></tr>
+<tr><td>Day 1</td><td>Rodrigo Aguirre de C&aacute;rcer &mdash; Values &amp; Purpose</td><td>Purpose as dual dimension: lasting inner peace + life direction. Frankl's meaning. Brain survival programming. Leader examples</td></tr>
+<tr><td>Day 1</td><td>Day 1 Group Prompts &mdash; DISCOVER</td><td>Individual: best leadership experience. Group: common factors. Deliverable: 3-5 conditions for leadership at its best</td></tr>
+<tr><td>Day 2</td><td>Stephanie Reina &mdash; The Science of Attention</td><td>Attentional networks (Posner &amp; Petersen), inattentional blindness (Mack &amp; Rock), Photo Taking Effect (Henkel), cognitive residue and task switching costs, technoference in relationships, attention span research (Gloria Mark), replenishment: nature, exercise, mindfulness</td></tr>
+<tr><td>Day 2</td><td>Stephanie Reina &mdash; Digital Habit Hacking</td><td>Opportunity cost of app time, 15+ practical strategies (notifications, app removal, grayscale, Freedom/Opal apps, email office hours), Digital Minimalism vs. "Appstinence" philosophies, right to disconnect</td></tr>
+<tr><td>Day 2</td><td>Laura Maguire, Ph.D. &mdash; Psychological Safety for Trust</td><td>Definition: belief you won't be punished for speaking up. Three application dimensions: mistakes (reaction/sharing), acknowledging (recognition), sense of belonging. Silent resistance as safety response</td></tr>
+<tr><td>Day 2</td><td>Day 2 Group Prompts &mdash; CONDITIONS FOR PERFORMANCE</td><td>Individual: what helps/hinders focus, trust, safety. Group: systemic conditions that support or undermine. Deliverable: 2-3 systemic conditions for performance and trust</td></tr>
+<tr><td>Day 3</td><td>Day 3 Group Prompts &mdash; MEANING &amp; NARRATIVE</td><td>Individual: What leadership story is being lived (not just told)? How to use critical thinking? Group: What story should leaders embody? Deliverable: shared aspirational narrative linked to challenge</td></tr>
+<tr><td>Day 1-2</td><td>Group 3 Structured Protocol</td><td>Meeting notes: individual peak leadership accounts (5 members), common thread (trust, accountability, empathy), psychological safety mapping (helps vs. hinders), group conclusion (People over Processes), Top 5 shared key points across all participants</td></tr>
+</table>
+</div>
+
+<!-- TAB: DAY 1 -->
+<div class="tab" id="tab-day1">
+<div class="day-header">
+<span class="badge">MONDAY, MARCH 23</span>
+<h2>Leading from Within</h2>
+<div class="day-theme">Self-awareness, strengths, values, purpose, and the Appreciative Inquiry foundation</div>
+</div>
+
+<h3>Sessions</h3>
+<div class="session-card">
+<div class="prof">Silvia Centeno, Ph.D. &mdash; Holistic Leadership Through Appreciative Inquiry</div>
+<div class="topic">The 4-D cycle. Business case for well-being: Top 100 Well-being Companies outperform S&amp;P 500. Burnout data: 66% of Europeans experienced burnout (STADA 2025), Portugal #1 in EU for burnout risk. 75% of sick leave cost in Spain is mental health-related. Well-being is a leadership responsibility. "Organizations do not perform &mdash; people do."</div>
+</div>
+<div class="session-card">
+<div class="prof">Mar Hurtado de Mendoza &mdash; Leading Self Through Character Strengths</div>
+<div class="topic">VIA Character Strengths (Seligman/Peterson). Gallup: employees using strengths daily are 6x more engaged and 3x more likely to report excellent well-being. From problem-fixing to strengths focus. "When you lead from your best self, people follow with theirs."</div>
+</div>
+<div class="session-card">
+<div class="prof">Rodrigo Aguirre de Carcer &mdash; Leadership Vision: Values &amp; Purpose</div>
+<div class="topic">Purpose: inner peace + life direction. Viktor Frankl's three paths to meaning: work, relationships, attitude toward suffering. Brain programmed for survival, not flourishing. Leaders who change the world first do the inner work. Satya Nadella, Paul Polman, Yvon Chouinard as examples. "One day, someone will show your face and say: This person sat in this room. And then they went out and did the work."</div>
+</div>
+<div class="session-card">
+<div class="prof">Shane O'Connor &mdash; Mindfulness</div>
+<div class="topic">Attention-training discipline. Respond rather than react. Hold complexity without premature simplification.</div>
+</div>
+
+<div class="prompt-box">
+<h4>Day 1 Group Work Prompts &mdash; DISCOVER</h4>
+<p><strong>Individual reflection:</strong> Think about your own organization. When have you seen leadership at its best? What values and strengths were alive?</p>
+<p><strong>Group synthesis:</strong> Across our different organizations, what patterns emerge? What gives life to people and teams when they are at their best? Identify 3-5 shared insights defining the positive core related to your leadership challenge.</p>
+</div>
+
+<div class="card" style="border-left:4px solid var(--green);margin-top:12px">
+<div class="card-title">Group 3 Findings &mdash; When Was Leadership at Its Best?</div>
+<div class="card-text">
+<strong>Individual insights:</strong> Leadership worked best with in-person, genuine care before scaling complexity. Proactive, supportive leaders who absorbed employee emotions and provided structure were most effective. Leaders as moderators, not directors. Acknowledgement over instruction. Shared optimism and acceptance of imperfection during crisis (COVID). Trust and zero micromanagement as defining features. Protection of the team. Giving people time and flexibility.<br><br>
+<strong>Common thread:</strong> Trust, accountability, and empathy emerged as the shared foundation of great leadership.<br><br>
+<strong>Top 5 Shared Key Points:</strong><br>
+<strong>1.</strong> Trust is the foundation of effective leadership &mdash; earned and extended, not mandated.<br>
+<strong>2.</strong> Flexibility and autonomy empower people &mdash; especially during disruption.<br>
+<strong>3.</strong> Leaders must communicate openly and share optimism &mdash; acknowledging effort, sharing responsibility, accepting imperfection.<br>
+<strong>4.</strong> Proactive support structures matter more than reactive ones &mdash; built in, not deployed in crisis mode.<br>
+<strong>5.</strong> Clarity, purpose, and structure reduce uncertainty &mdash; leadership that absorbs ambiguity and converts it into clarity.
+</div>
+</div>
+
+<h3>Connection to ANCHOR</h3>
+<div class="card">
+<div class="card-text"><strong>A &mdash; Awareness:</strong> Character Strengths as self-knowledge. At PORTILAME, the founders' profile (Emotional, Focused, Modest, Patient) created "calm under pressure" that defined 20 years of growth.</div>
+</div>
+<div class="card navy">
+<div class="card-text"><strong>N &mdash; Narrative:</strong> Purpose and values as anchor story. "Who likes, comes. Who loves, stays" is not a slogan &mdash; it is the narrative that held the culture together.</div>
+</div>
+</div>
+
+<!-- TAB: DAY 2 -->
+<div class="tab" id="tab-day2">
+<div class="day-header">
+<span class="badge">TUESDAY, MARCH 24</span>
+<h2>The Power of Presence</h2>
+<div class="day-theme">Attention, digital habits, focus, psychological safety, and trust</div>
+</div>
+
+<h3>Sessions</h3>
+<div class="session-card">
+<div class="prof">Stephanie Reina &mdash; The Science of Attention</div>
+<div class="topic">Attention defined as "taking possession by the mind, in clear and vivid form, of one out of what may seem several simultaneously possible objects or trains of thought" (William James, 1890). Three attentional networks: Alerting, Orienting, Executive Function (Posner &amp; Petersen, 1990). Cognitive resources are limited &mdash; inattentional blindness (Mack &amp; Rock, 1998). The Photo Taking Effect: photographing reduces memory of experiences (Henkel, 2014). Cognitive residue: task switching = less productivity + more mistakes (Leroy, 2009; Loukopoulos et al., 2001). Technoference: digital interference harms both couple and parent-child relationships (McDaniel &amp; Radesky, 2018). Short-form video, shorter shots in TV/ads, and double screening are shrinking attention spans (Gloria Mark). Replenishment through nature, physical activity, and mindfulness. Key insight: <strong>attention is trainable</strong>.</div>
+</div>
+<div class="session-card">
+<div class="prof">Stephanie Reina &mdash; Digital Habit Hacking</div>
+<div class="topic">Practical session on opportunity cost of app/platform time. Strategies: turn off notifications, remove apps, phone pouch/airplane mode, skip morning/night check, grayscale mode, Freedom/Opal/Rescue Time/Forest/FocusFlight apps, Focusmate, News Feed Eradicator/BeTimeful, Unhook extension, email office hours + schedule send, mindfulness for internal triggers. Two philosophies: <strong>Digital Minimalism</strong> and <strong>"Appstinence"</strong>. Right to disconnect discussion: unspoken digital norms in teams. Group reflection: where is fragmented attention costing you the most &mdash; performance, relationships, or personal life?</div>
+</div>
+<div class="session-card">
+<div class="prof">Laura Maguire, Ph.D. &mdash; Psychological Safety for Trust</div>
+<div class="topic">Psychological safety = "the belief that you will not be punished or humiliated for speaking up with ideas, questions, concerns, or mistakes." The world needs a different type of leader. Three application dimensions: <strong>Making mistakes</strong> (How do you react when a team member makes a mistake? Do you share your own?), <strong>Acknowledging</strong> (Do you acknowledge good work? When were you last acknowledged?), <strong>Sense of belonging</strong> (When did you last feel a clear sign of belonging to your organization?). Silent resistance is not defiance &mdash; it is a safety response. When change threatens autonomy or competence, people comply externally while resisting internally.</div>
+</div>
+<div class="session-card">
+<div class="prof">Shane O'Connor &mdash; Mindfulness</div>
+<div class="topic">Daily attention-training continuation. Mindfulness as "a state of focused attention in the present moment without judgment." Action step: pick one moment in your day and do it with full, undivided attention &mdash; no phone, no multitasking. Just notice.</div>
+</div>
+
+<div class="prompt-box">
+<h4>Day 2 Group Work Prompts &mdash; CONDITIONS FOR PERFORMANCE</h4>
+<p><strong>Individual reflection:</strong> In your organization, what helps or hinders focus, trust, and psychological safety?</p>
+<p><strong>Group synthesis:</strong> What conditions consistently support &mdash; or undermine &mdash; attention and safety across contexts? Where are the biggest leverage points for change?</p>
+<p><strong>Deliverable:</strong> 2-3 systemic conditions that strongly influence performance and trust.</p>
+</div>
+
+<div class="card" style="border-left:4px solid var(--green);margin-top:12px">
+<div class="card-title">Group 3 Findings &mdash; Psychological Safety Mapping</div>
+<div class="card-text">
+<strong>What helps:</strong> Free psychological support, "good" governance (e.g. no-meeting Fridays), optional mindfulness sessions, transparency about failures.<br><br>
+<strong>What hinders:</strong> No role models, "wrong" governance, workload and pressure, not listening, missing understanding and awareness, missing trust, missing communication, not enough resources.<br><br>
+<strong>Group conclusion:</strong> Teamwork, Trust, People over Processes.<br><br>
+<strong>Key observation:</strong> Low hierarchy with limited governance makes it harder to establish these conditions consistently &mdash; reinforcing the need for intentional structure (not bureaucracy) to sustain psychological safety at scale.
+</div>
+</div>
+
+<h3>Connection to ANCHOR</h3>
+<div class="card">
+<div class="card-text"><strong>A &mdash; Awareness (deepened):</strong> The science of attention adds the neurological layer. A leader who cannot manage their own attention cannot lead through complexity. Cognitive residue from task switching directly undermines decision quality. At PORTILAME, the founders' recognition that operational overload was destroying strategic capacity is this principle in action.</div>
+</div>
+<div class="card green">
+<div class="card-text"><strong>H &mdash; Humanity:</strong> Psychological safety as operational "people-first." Maguire's three dimensions (mistakes, acknowledging, belonging) map directly to PORTILAME's journey: the 2020 diagnosis revealed culture being interpreted rather than lived. The new ComEx model (48h counter-proposal) is a structural attempt to rebuild voice. The "Being PORTILAME" manifesto and KickOff sense-of-belonging stories are the emotional infrastructure of safety.</div>
+</div>
+<div class="card navy">
+<div class="card-text" style="color:#111"><strong>C &mdash; Cadence:</strong> Digital Habit Hacking is about rhythm discipline. Email office hours, morning/night check elimination, scheduled send &mdash; these are cadence choices. At PORTILAME, the weekly ComEx meetings and structured reporting cadence serve the same function: protecting attention and creating predictable space for focus.</div>
+</div>
+</div>
+
+<!-- TAB: DAY 3 -->
+<div class="tab" id="tab-day3">
+<div class="day-header">
+<span class="badge">WEDNESDAY, MARCH 25</span>
+<h2>Cognition and Purposeful Communication</h2>
+<div class="day-theme">Critical thinking, metacognition, decision-making, and the leader's narrative</div>
+</div>
+
+<h3>Sessions</h3>
+<div class="session-card">
+<div class="prof">Maria Jose Ferrari, Ph.D. &mdash; Critical Thinking in the Age of AI</div>
+<div class="topic">Critical thinking as top WEF skill (2025). In the AI era, critical thinking is both shield (against misinformation and bias) and sword (for innovation). Art analysis of "Las Meninas" by Vel&aacute;zquez as exercise in power, performance, and critical interpretation. "Garbage in, garbage out" &mdash; the importance of quality input for AI systems. Neuroscience meets philosophy: measurable brain responses to emotional imagery and persuasion.</div>
+</div>
+<div class="session-card">
+<div class="prof">Maria Jose Ferrari, Ph.D. &mdash; Metacognition and Decision-Making</div>
+<div class="topic">Metacognition = "thinking about thinking." Kahneman's System 1 (fast, intuitive) vs. System 2 (slow, deliberate). Systematic errors and cognitive biases affect even trained professionals. Mapping cognitive profiles: strengths (analytical, creative, decisive, open-minded) vs. weaknesses (impulsivity, analysis paralysis, overconfidence, confirmation bias). Self-assessment + peer reflection to uncover blind spots. "Not because we think something is correct, it necessarily is &mdash; our brains make mistakes."</div>
+</div>
+<div class="session-card">
+<div class="prof">Victor Gay Zaragoza &mdash; The Leader's Narrative: Legitimacy, Trust &amp; Meaning</div>
+<div class="topic">Storytelling biologically boosts oxytocin (trust, happiness) and reduces cortisol (stress) &mdash; measurable in clinical settings. Narrative Economics: one-third rule for company value &mdash; revenue, brand (story), and future value. Tesla vs. Toyota: narrative drives stock beyond revenue. The Triple Challenge for leaders: distrust, fear, digital overload. Four Principles of Effective Storytelling: (1) Sell the dream, not the product, (2) Empathy Generation Strategy &mdash; emotional connection from the start, (3) Anchor in authentic emotion and real experience, (4) Adjust for modern overwhelmed audiences. Julius Caesar's "Commentaries on the Gallic Wars" as the ultimate leadership narrative.</div>
+</div>
+<div class="session-card">
+<div class="prof">Shane O'Connor &mdash; Mindfulness: Purpose, Movement &amp; Self-Compassion</div>
+<div class="topic">80% of communication flows body-to-mind, not the reverse. Identifying where purpose resides in the body. Self-compassion: "Are you compassionate to yourself?" Using the same kindness toward yourself as toward a loved one after a mistake. Guided meditation on breath, body awareness, and nurturing achievement memory.</div>
+</div>
+
+<div class="prompt-box">
+<h4>Day 3 Group Work Prompts &mdash; MEANING &amp; NARRATIVE</h4>
+<p><strong>Individual reflection:</strong> What leadership story is currently being <em>lived</em> in your organization (not just told)? How can we use critical thinking in your organization?</p>
+<p><strong>Group synthesis:</strong> What story should leaders embody to inspire commitment?</p>
+<p><strong>Deliverable:</strong> A shared aspirational leadership narrative linked to your challenge.</p>
+</div>
+
+<h3>Connection to ANCHOR</h3>
+<div class="card">
+<div class="card-text"><strong>A &mdash; Awareness (metacognitive):</strong> Ferrari's System 1/System 2 framework maps directly to PORTILAME 2020-2022: the founders operated on System 1 (intuitive, fast decisions that had always worked) but needed System 2 (deliberate, structural thinking) to recognize the operating model itself was the problem. That metacognitive leap took two years. Cognitive biases (overconfidence, confirmation bias) explain why growing organizations resist restructuring even when evidence is clear.</div>
+</div>
+<div class="card navy">
+<div class="card-text" style="color:#111"><strong>N &mdash; Narrative:</strong> Gay Zaragoza's four storytelling principles are the science behind what PORTILAME did instinctively at KickOff 2026: (1) sold the dream ("children saying my hero is my father, I want to work at PORTILAME"), (2) opened with empathy (around 100 families, immense responsibility), (3) anchored in authentic emotion ("Being PORTILAME" manifesto), (4) adapted for the audience (Menti poll, visual storytelling). The leader's narrative literally changes brain chemistry &mdash; oxytocin up, cortisol down.</div>
+</div>
+<div class="card green">
+<div class="card-text"><strong>R &mdash; Resilience:</strong> Self-compassion (O'Connor) is the missing link in high-performance leadership. At PORTILAME, the founders' acknowledgement of vulnerability ("lowered pride, elevated humility") is exactly this &mdash; applying the same kindness to yourself that you would give a loved one. Sustainable leadership requires recovery of the self, not just the system.</div>
+</div>
+</div>
+
+<!-- TAB: DAY 4 -->
+<div class="tab" id="tab-day4">
+<div class="day-header">
+<span class="badge">THURSDAY, MARCH 26</span>
+<h2>Healthy Habits &amp; Vitality</h2>
+<div class="day-theme">Brain energy, metabolic flexibility, nutrition for performance, and organizational transformation</div>
+</div>
+
+<h3>Sessions</h3>
+<div class="session-card">
+<div class="prof">Daniel de la Serna &mdash; Brain Energy, Stress &amp; Metabolic Flexibility + Nutrition for Optimal Brain Performance</div>
+<div class="topic">The brain runs on energy. Metabolic flexibility &mdash; the capacity to switch between glucose, ketones, and lactate &mdash; is one of the most important markers of health. Decision-making under stress is energetically expensive; leaders who protect their metabolic flexibility make better decisions. Physical activity is the single most powerful intervention to protect brain health (increases mitochondrial density). Chronic inflammation competes with the brain for resources. Too much comfort erodes resilience.</div>
+</div>
+<div class="session-card">
+<div class="prof">Mario Sebasti&aacute;n &mdash; Company Case Study: Cisco &mdash; A New Way of Leading</div>
+<div class="topic">VP Customer Experience EMEA at Cisco ($1.2B Services &amp; Software, 180 people, 2000+ clients). A real case of organizational transformation: from declining business, reorganizations, and disengagement &mdash; to a strengths-based culture using Appreciative Inquiry at enterprise scale. The pivotal insight: &ldquo;Fixing &ne; improving.&rdquo;</div>
+</div>
+
+<div class="prompt-box">
+<h4>Day 4 Group Work Prompts &mdash; Human Energy</h4>
+<p><strong>Individual reflection:</strong> How is human energy treated in your organization today?</p>
+<p><strong>Group synthesis:</strong> What patterns do we see across organizations regarding energy, pressure, and recovery? What leadership practices could protect and enhance vitality without reducing performance?</p>
+<p><strong>Output:</strong> 2&ndash;3 leadership practices that enable sustainable performance.</p>
+</div>
+
+<h3>Key Insights from Daniel de la Serna</h3>
+
+<div class="card">
+<div class="card-title">The Brain&rsquo;s Energy Economy</div>
+<div class="card-text">The brain uses three fuel sources: glucose (primary), ketones (during fasting), and lactate (produced by muscles during physical activity &mdash; not waste, but brain fuel). Metabolic flexibility &mdash; the ability to switch between substrates &mdash; is a critical health marker. When stress demands more brain energy, blood flow redirects from other organs. With only 5 litres of blood, this is a zero-sum game: brain performance comes at the cost of other systems.</div>
+</div>
+
+<div class="card navy">
+<div class="card-title">Decision-Making Is Expensive</div>
+<div class="card-text" style="color:#111">Humans solve stress through decision-making &mdash; not eating, not running. But decision-making requires enormous metabolic resources. The more substrates available (metabolic flexibility), the more capacity for good decisions. Leaders who are metabolically depleted make worse decisions. This has direct implications for meeting schedules, break rhythms, and decision fatigue in organizations.</div>
+</div>
+
+<div class="card green">
+<div class="card-title">Brain vs. Immune System: The Energy Trade-Off</div>
+<div class="card-text">The brain and immune system are the two most energy-expensive organs &mdash; and they cannot both operate at peak simultaneously. Chronic inflammation (from lifestyle, stress, or poor nutrition) forces the immune system to compete with the brain for resources. Result: fatigue, reduced cognitive performance, and impaired leadership capacity. Protecting against chronic inflammation is protecting leadership capacity.</div>
+</div>
+
+<div class="card orange">
+<div class="card-title">Physical Activity: The Universal Intervention</div>
+<div class="card-text">&ldquo;The most powerful intervention to protect the brain is to be more physically active.&rdquo; Exercise produces lactate (brain fuel) AND increases mitochondrial density (energy production capacity). Mitochondria need acute stress to maintain themselves &mdash; comfort destroys them. Cold exposure, intermittent fasting, and physical effort all promote mitochondrial health. Modern comfort is biologically new; our systems evolved for periodic discomfort.</div>
+</div>
+
+<div class="card">
+<div class="card-title">The Comfort Paradox</div>
+<div class="card-text">&ldquo;Too much comfort has an impact on our health because our biology evolved to handle acute stressors, not chronic ease.&rdquo; Organizations that eliminate all friction, discomfort, and challenge from work are inadvertently degrading the metabolic resilience of their people. The goal is not discomfort for its own sake &mdash; it is purposeful challenge within a supportive structure. This is the biological foundation of ANCHOR&rsquo;s Resilience dimension.</div>
+</div>
+
+<h3>Circadian Rhythms &amp; Energy Management</h3>
+<p class="subtitle-line">Daniel de la Serna &mdash; The science of timing, light, and biological synchronization</p>
+
+<div class="card">
+<div class="card-title">Biorhythms: The Foundation of Human Performance</div>
+<div class="card-text">Almost all bodily processes are temporally coordinated through circadian rhythms &mdash; the 24-hour biological clock. Each organ has specific periods of heightened activity and rest, synchronized primarily by sunlight (the principal zeitgeber), food intake timing, and temperature changes. Central clocks (brain/hypothalamus) and peripheral clocks (organs) must stay synchronized. Desynchronization &mdash; from jet lag, shift work, or irregular schedules &mdash; is the first step toward chronic disease, even before symptoms appear. The 2017 Nobel Prize in Medicine recognized this circadian research.</div>
+</div>
+
+<div class="card navy">
+<div class="card-title" style="color:white">Cortisol &amp; Melatonin: The Dual Rhythm</div>
+<div class="card-text" style="color:#ddd">Cortisol peaks in the early morning, energizing the body for performance. Melatonin rises at night, regulating sleep and cellular repair (including mitochondrial repair). Chronic stress disrupts cortisol patterns; artificial blue light suppresses melatonin by up to <strong style="color:#C8102E">70%</strong> with just one hour of evening exposure. When we lose rhythm in cortisol or melatonin production, we suffer the consequences &mdash; this pre-symptomatic phase of disease appears long before clinical diagnosis.</div>
+</div>
+
+<div class="card orange">
+<div class="card-title">Practical Chronobiology for Leaders</div>
+<div class="card-text">Maximize morning natural sunlight exposure (anchors cortisol cycle). Schedule high-decision meetings during cortisol-aligned hours. Filter or eliminate blue light 1&ndash;2h before sleep. Keep consistent meal times within the first 12 hours post-waking. Respect chronotypes (early birds vs. night owls) &mdash; sensitivity to light varies but natural exposure can reset patterns. Three days in nature can fully reset a disrupted body clock. Organizations that respect these rhythms protect their leaders&rsquo; decision-making capacity.</div>
+</div>
+
+<h3>Mindfulness Day 4: Discovering Blind Spots</h3>
+<p class="subtitle-line">Shane O&rsquo;Connor &mdash; What you&rsquo;re not seeing might be right in front of you</p>
+
+<div class="card">
+<div class="card-title">The Blind Spot Exercise</div>
+<div class="card-text">&ldquo;Blind spots are things we&rsquo;re looking at but can&rsquo;t see.&rdquo; Using the classic letter-F counting exercise, O&rsquo;Connor demonstrated that even with clear instructions, people consistently miss what&rsquo;s in front of them &mdash; the brain has ~240,000 scotomas (blind spots). Applied to health: what are you overlooking in your nutrition, breathing, sleep, or stress management? The inefficient breather averages 26,000 breaths/day when 10,000&ndash;15,000 is optimal. Lasting change comes from authentic choice (&ldquo;I choose, I can&rdquo;), not obligation.</div>
+</div>
+
+<div class="card green">
+<div class="card-title">Multidimensional Nutrition</div>
+<div class="card-text">Well-being nutrition has four dimensions, not one: (1) Edible nutrition &mdash; what you eat; (2) Social nutrition &mdash; connections and interactions; (3) Biophilic nutrition &mdash; time in nature; (4) Passion/outlet nutrition &mdash; hobbies and creative engagement. Also introduced empathic joy as the antidote to envy &mdash; gaining energy from others&rsquo; happiness rather than feeling diminished. This concept directly connects to ANCHOR&rsquo;s Humanity (Belonging) dimension.</div>
+</div>
+
+<h3>PORTILAME in Practice: Well-Being as Organizational DNA</h3>
+<p class="subtitle-line">How PORTILAME already lives these principles &mdash; evidence that the ANCHOR framework is not theoretical but operational</p>
+
+<div class="card green">
+<div class="card-title">External Sports Support</div>
+<div class="card-text">PORTILAME actively supports community sport across all age groups through direct and indirect financial funding: athletics, football, padel, trail running, and more. This positions the company as a community anchor while reinforcing its identity as a well-being-oriented organization. It builds brand visibility, local trust, and employee pride in belonging.</div>
+</div>
+
+<div class="card green">
+<div class="card-title">Internal Employee Sports Programme</div>
+<div class="card-text">Employees who regularly compete in sports (cycling, padel, futsal, and others &mdash; no sport excluded) receive direct financial support, full branded equipment with company identity (&ldquo;EU SOU PORTILAME&rdquo; &mdash; the literal embodiment of wearing the jersey), and complete backoffice support for promotion of their achievements, values, and efforts. This celebrates individual identity within collective belonging, and creates indirect inspiration: colleagues who do not normally practice sport see the visibility and culture of physical vitality and are drawn toward it.</div>
+</div>
+
+<div class="card green">
+<div class="card-title">Sports Facility Partnerships</div>
+<div class="card-text">PORTILAME maintains direct partnerships with nearby sports facilities (padel complex, gym) providing weekly time slots for dynamic, regular use among employees, plus additional discounts to encourage personal enrolment and the development of healthy personal routines. This removes friction: the proximity and financial accessibility lower every barrier to regular physical activity &mdash; exactly what De la Serna prescribes for mitochondrial health and metabolic flexibility.</div>
+</div>
+
+<div class="card navy">
+<div class="card-title">Call Semanal &mdash; Weekly Knowledge Sharing</div>
+<div class="card-text" style="color:#111">Every Wednesday after lunch, 30 minutes (25&rsquo; presentation + 5&rsquo; Q&amp;A), online, voluntary. Any employee presents their perspective: vision, strategy, difficulties, processes, responsibilities &mdash; all previously prepared with digital and oral content. It gives stage to every person, sensitizes the entire organization to each role&rsquo;s reality, and builds lateral understanding. Sessions are recorded and stored in a repository for future reference. This is Narrative (N) and Awareness (A) in practice: every voice matters, every perspective counts.</div>
+</div>
+
+<div class="card navy">
+<div class="card-title">Annual Kick-Off</div>
+<div class="card-text" style="color:#111">At the start of each year, founders/partners, C-level, and team leaders present to the entire company: where the organization is heading, how it is structuring itself, where it wants to position. Linked to the previous year&rsquo;s results at all levels, but deeply rooted in the organizational DNA since 2024 &mdash; recalling stories connecting colleagues across every level, sharing professional and personal narratives that occurred within the workplace and among colleagues. This event involves people, reconnects them to the emotional bonds that unite everyone and to the company&rsquo;s purpose: we are all working toward the same mission.</div>
+</div>
+
+<div class="card">
+<div class="card-title">Structural Foundations of Well-Being</div>
+<div class="card-text">Beyond sports and events, PORTILAME embeds well-being into its organizational structure: clearly defined roles and responsibilities, well-structured salary levels with transparency and equity in duties and benefits, a culture of constructive feedback, and teams led by leaders who act as moderators and orientators rather than commanders. These structural elements &mdash; often invisible but deeply felt &mdash; are what makes well-being sustainable rather than performative.</div>
+</div>
+
+<div class="card orange">
+<div class="card-title">Community, Academic &amp; Social Impact</div>
+<div class="card-text">PORTILAME supports local NGOs, promotes and sponsors intervention artists, and maintains a continuous relationship with the academic world (schools, professional schools, universities) &mdash; sharing experiences, materials, and support; exchanging knowledge; and offering students the opportunity to experience PORTILAME&rsquo;s culture and potentially join the team. This creates desire, cultivates the brand, evidences the pride of those already there, validates the organizational DNA and its foundation in the most noble human values.</div>
+</div>
+
+<h3>Key Insights from Mario Sebasti&aacute;n &mdash; Cisco Case Study</h3>
+<p class="subtitle-line">A New Way of Leading: Strengths-Based Organization &amp; Appreciative Inquiry at Enterprise Scale</p>
+
+<div class="card">
+<div class="card-title">The Problem: When Fixing Makes Things Worse</div>
+<div class="card-text">Cisco CX EMEA faced declining business, reorganizations, lay-offs, fear, and disengagement. Mario&rsquo;s instinct was to fix the problem: more control, more meetings, focus on issues. The result? Things got worse. The natural &ldquo;fixing reflex&rdquo; &mdash; the default response of most leaders under pressure &mdash; was itself the problem. More structure, more reporting, more oversight did not rebuild trust or energy. It amplified fear.</div>
+</div>
+
+<div class="card navy">
+<div class="card-title" style="color:white">The Turning Point: One Question Changed Everything</div>
+<div class="card-text" style="color:#ddd">&ldquo;Tell me about a time things worked really well.&rdquo; When Mario asked this single Appreciative Inquiry question, the energy in the room shifted immediately. People stopped defending and started remembering. Three discoveries emerged: <strong style="color:white">focus shapes behaviour</strong> (what you pay attention to grows), <strong style="color:white">energy drives performance</strong> (not compliance), and <strong style="color:white">fixing &ne; improving</strong> (solving problems returns you to baseline; building on strengths takes you beyond it).</div>
+</div>
+
+<div class="card green">
+<div class="card-title">The Journey: From Challenge to Strengths-Based Organization</div>
+<div class="card-text">Cisco&rsquo;s transformation followed a clear arc: Challenge &rarr; Opportunity &rarr; Strategy (3-year plan + Vision) &rarr; Implementation &rarr; Results. The implementation centred on building a Strengths-Based Organization using CliftonStrengths, the Team Space tool, strengths workshops, individual coaching, weekly check-ins focused on what people do best, and quarterly engagement surveys. The leader&rsquo;s role shifted from &ldquo;decision maker&rdquo; to &ldquo;context creator&rdquo; &mdash; someone who creates conditions for others to excel and grow.</div>
+</div>
+
+<div class="card orange">
+<div class="card-title">Appreciative Inquiry at Cisco: The 4D Cycle in Practice</div>
+<div class="card-text">Mario applied the same AI cycle we use in ANCHOR: Discovery (what works when we are at our best?), Dream (what if every team operated from strengths?), Design (strengths-based tools, coaching, check-ins), Destiny (embed into culture, measure through engagement). His core philosophy: &ldquo;An organization is not a problem to be solved but a solution to be embraced.&rdquo; This is Appreciative Inquiry at its purest &mdash; and it worked at the scale of a $1.2B global operation.</div>
+</div>
+
+<div class="quote">
+<p>&ldquo;Tell me about a time things worked really well.&rdquo;</p>
+<div class="attribution">&mdash; Mario Sebasti&aacute;n, VP CX EMEA, Cisco</div>
+</div>
+
+<h3>Connection to ANCHOR</h3>
+
+<div class="card green">
+<div class="card-text"><strong>R &mdash; Resilience (Mindfulness):</strong> De la Serna provides the biological proof: metabolic flexibility, mitochondrial health, and protection from chronic inflammation are the physiological foundations of sustainable leadership. PORTILAME&rsquo;s sports programmes, facility partnerships, and structured routines are Resilience in practice &mdash; not wellness theatre, but biological infrastructure for sustained performance.</div>
+</div>
+
+<div class="card orange">
+<div class="card-text"><strong>C &mdash; Cadence (Health):</strong> The Call Semanal (weekly rhythm), Kick-Off (annual rhythm), sports slots (weekly), quarterly feedback cycles &mdash; these are Cadence in its purest form. Regular, predictable rhythms that the body and mind can synchronize with. De la Serna shows why: the brain thrives on predictable energy cycles and suffers from chaotic ones.</div>
+</div>
+
+<div class="card navy">
+<div class="card-text" style="color:#111"><strong>N &mdash; Narrative (Trust):</strong> The Call Semanal gives every person a stage. The Kick-Off re-tells the organizational story with emotion and connection. The sports promotion celebrates individual narratives within collective identity. Narrative is not just storytelling &mdash; it is creating the conditions where people feel seen, heard, and valued.</div>
+</div>
+
+<div class="card">
+<div class="card-text"><strong>H &mdash; Humanity (Belonging):</strong> &ldquo;EU SOU PORTILAME&rdquo; &mdash; literally wearing the company&rsquo;s identity in personal competitions &mdash; is belonging made visible. The community support, academic partnerships, and NGO engagement extend belonging beyond the organization to the ecosystem. When children see their parents proud, that is belonging at its deepest.</div>
+</div>
+
+<div class="card">
+<div class="card-text"><strong>A &mdash; Awareness (Being):</strong> The blind spots exercise reveals a fundamental truth about self-knowledge: we consistently miss what is right in front of us. The circadian science adds precision &mdash; cortisol and melatonin patterns shape when we think clearly and when we don&rsquo;t. Leaders who understand their own biological rhythms (chronotype, peak decision hours, breath quality) lead from a place of genuine self-awareness, not guesswork.</div>
+</div>
+
+<div class="card" style="border-left-color:var(--blue)">
+<div class="card-text"><strong>Cisco Validation &mdash; All Dimensions:</strong> Mario Sebasti&aacute;n&rsquo;s Cisco case validates the entire ANCHOR framework at enterprise scale. Awareness (CliftonStrengths self-knowledge), Narrative (&ldquo;tell me about a time things worked well&rdquo;), Cadence (weekly check-ins, quarterly surveys), Humanity (context creation over command), Organization (Team Space tool, coaching structures), Resilience (shifting from fixing to building). The lesson: when you stop fixing and start amplifying, performance becomes sustainable &mdash; and human.</div>
+</div>
+</div>
+
+<!-- TAB: DAY 5 -->
+<div class="tab" id="tab-day5">
+<div class="day-header">
+<span class="badge">FRIDAY, MARCH 27</span>
+<h2>From Insight to Action with Resilience</h2>
+<div class="day-theme">Company visit, final integration, presentations</div>
+</div>
+
+<div class="session-card">
+<div class="prof">10:00-12:00 &mdash; Company Visit: Sanitas BUPA</div>
+<div class="topic">Real-world health and well-being organizational model.</div>
+</div>
+<div class="session-card">
+<div class="prof">15:10-16:30 &mdash; Final Presentations + Closing (Silvia Centeno)</div>
+<div class="topic">7-minute presentations. Full AI cycle: Discover through Destiny.</div>
+</div>
+
+<div class="prompt-box">
+<h4>Final Integration &mdash; DESTINY</h4>
+<p>What concrete actions could realistically be taken? The presentation must answer: "How can holistic leadership, grounded in Appreciative Inquiry, be realistically applied to address this leadership challenge in today's organizations?"</p>
+</div>
+</div>
+
+<!-- TAB: LEADERSHIP TOOLS -->
+<div class="tab" id="tab-tools">
+<h2>Leadership Tools</h2>
+<p class="subtitle-line">Practical instruments for holistic leadership culture &mdash; at every level</p>
+
+<p>The ANCHOR framework only works in daily practice. These tools are organic rituals, not bureaucracy.</p>
+
+<h3>Continuous Peer Feedback</h3>
+<div class="tool-card"><h4>Peer Pulse Check</h4><p>Weekly micro-feedback (2 min). One strength observed, one growth area. No hierarchy, no forms. Builds strengths-noticing habit. Connected to Character Strengths (Day 1) and Psychological Safety (Day 2).</p></div>
+<div class="tool-card"><h4>360-Degree Reflection Cycles</h4><p>Quarterly structured feedback. Not evaluation &mdash; development. "What does this person do at their best? How can they do more of it?"</p></div>
+
+<h3>Celebrating Achievements</h3>
+<div class="tool-card"><h4>Recognition Rituals</h4><p>Monthly "Spotlight" acknowledging values-aligned behaviours. "Who lived Convergence, Know-how, Progress, Empathy, or Sustainability this month?"</p></div>
+<div class="tool-card"><h4>Story Wall</h4><p>Physical or digital space for stories of pride, support, inspiration. Families contribute too. If children can see it, it is real.</p></div>
+
+<h3>Focus on Solutions</h3>
+<div class="tool-card"><h4>Appreciative Problem-Solving</h4><p>"When have we solved something similar well? What made that work? What would the best version look like?" Embeds Appreciative Inquiry into daily operations.</p></div>
+
+<h3>Promoting Proactivity</h3>
+<div class="tool-card"><h4>Initiative Ownership Cards</h4><p>Each employee chooses one improvement per quarter within their sphere. Not assigned &mdash; chosen. Every employee is a leader from their position.</p></div>
+
+<h3>Simplifying Systems</h3>
+<div class="tool-card"><h4>"Kill the Noise" Audits</h4><p>Quarterly: what meeting, report, or process can we eliminate? Target: reduce bureaucracy 10% per cycle.</p></div>
+
+<h3>Space for Reflection</h3>
+<div class="tool-card"><h4>Weekly Reflection Ritual</h4><p>15 min, end of week. What went well? What did I learn? What will I change? Individual or collective. Builds metacognitive capacity (Day 3).</p></div>
+<div class="tool-card"><h4>Quarterly "Stop and Think"</h4><p>Half-day stepping out of operations for systemic reflection. "Are we becoming what we set out to be?"</p></div>
+
+<h3>Best Friend at Work</h3>
+<div class="tool-card"><h4>Connection Architecture</h4><p>Onboarding buddies (not managers). Cross-team social rituals. Family community events. Gallup's single strongest predictor of engagement.</p></div>
+</div>
+
+<!-- TAB: ROADMAP -->
+<div class="tab" id="tab-roadmap">
+<h2>Implementation Roadmap</h2>
+<p class="subtitle-line">Layered implementation with measurable follow-up</p>
+
+<div class="card" style="margin-bottom:20px;border-left:4px solid var(--red)">
+<div class="card-title">Phase 0 &mdash; Diagnose</div>
+<div class="card-text">Before implementing, run the 6 Diagnostic Rules to understand where the organization stands. DNA clarity, growth vs. structure gap, leadership bottleneck, cultural transmission, knowledge institutionalization, people investment. <strong>Know before you move.</strong></div>
+</div>
+
+<div class="grid-3">
+<div class="phase-card">
+<span class="badge blue">PHASE 1</span>
+<h4>30 Days &mdash; Foundation</h4>
+<ul>
+<li>Leadership self-assessment (Strengths + Wingfinder)</li>
+<li>Organizational health baseline (Radar)</li>
+<li>Cadence installation (weekly rhythms)</li>
+<li>First narrative act (leader's authentic story)</li>
+<li>Internal influencers nominated</li>
+</ul>
+</div>
+<div class="phase-card p2">
+<span class="badge orange">PHASE 2</span>
+<h4>90 Days &mdash; Structure</h4>
+<ul>
+<li>Governance clarity (roles, thresholds)</li>
+<li>Psychological safety training</li>
+<li>Career architecture published</li>
+<li>Recruitment redesigned (Human Skills first)</li>
+<li>Resilience protocol launched</li>
+</ul>
+</div>
+<div class="phase-card p3">
+<span class="badge green">PHASE 3</span>
+<h4>12 Months &mdash; Integration</h4>
+<ul>
+<li>Full ANCHOR deployment</li>
+<li>Measurement system mature</li>
+<li>Community engagement active</li>
+<li>Succession depth (n+2)</li>
+<li>Annual framework review</li>
+</ul>
+</div>
+</div>
+
+<h3>KPIs for Follow-up</h3>
+<div class="kpi-row">
+<div class="kpi"><strong>Radar Score</strong>7 dimensions quarterly</div>
+<div class="kpi"><strong>Universal KPI</strong>External benchmark parity</div>
+<div class="kpi"><strong>Galactic KPI</strong>Predictive vanguard target</div>
+<div class="kpi"><strong>eNPS</strong>Employee Net Promoter</div>
+<div class="kpi"><strong>Retention</strong>Voluntary turnover</div>
+<div class="kpi"><strong>Absenteeism</strong>Days lost per employee</div>
+</div>
+<div class="kpi-row">
+<div class="kpi"><strong>Engagement</strong>Gallup Q12</div>
+<div class="kpi"><strong>Best Friend</strong>% with close connection</div>
+<div class="kpi"><strong>HORIZON Index</strong>External expectation tracking</div>
+<div class="kpi"><strong>Leadership 360</strong>Quarterly feedback</div>
+<div class="kpi"><strong>Initiatives</strong>Employee-owned improvements</div>
+<div class="kpi"><strong>Succession</strong>n+2 coverage %</div>
+</div>
+</div>
+
+<!-- TAB: PRESENTATION -->
+<div class="tab" id="tab-presentation">
+<h2>Slide Deck</h2>
+<p class="subtitle-line">7-minute final presentation &mdash; to be refined with each day's insights</p>
+
+<div class="card">
+<div class="card-title">Structure (11 slides)</div>
+<div class="card-text">
+<strong>1. Title</strong> &mdash; ANCHOR Framework. Group 3 names + schools.<br><br>
+<strong>2. The Hook</strong> &mdash; "Imagine around 100 families&hellip;" Emotional entry point.<br><br>
+<strong>3. The Context</strong> &mdash; Three big stats: 66% burnout, 70% change fails, 13% engaged. The leadership gap.<br><br>
+<strong>4. Discover</strong> &mdash; Five truths from Group 3 + PORTILAME journey. Real evidence, real diagnosis.<br><br>
+<strong>5. Dream</strong> &mdash; "My hero is my father&hellip; work at PORTILAME." DNA, not bureaucracy. A framework any org can use.<br><br>
+<strong>6. Design: ANCHOR Framework</strong> &mdash; Six dimensions with generic words, Three Games (Inner/Outer/Long). Universal, adoptable.<br><br>
+<strong>7. Design: Calibration Engine</strong> &mdash; HORIZON benchmarking + Three KPI layers (Radar/Universal/Galactic). Predictive alerting.<br><br>
+<strong>8. Session Mapping</strong> &mdash; Every session shaped a dimension. All professors mapped to ANCHOR letters. Visual proof of programme integration.<br><br>
+<strong>9. Design: Leadership Tools</strong> &mdash; Six tools mapped to ANCHOR dimensions. Practical, implementable.<br><br>
+<strong>10. Destiny</strong> &mdash; Phase 0 Diagnose (6 universal rules) + 30/90/365-day roadmap. Layered, traceable.<br><br>
+<strong>11. Close</strong> &mdash; "An anchor doesn't resist the storm. It holds the ship steady so the crew can navigate." + QR code.
+</div>
+</div>
+
+<a href="ANCHOR_Presentation.pptx" download class="download-btn">Download PPTX Presentation</a>
+<a href="ANCHOR_Presentation.pdf" download class="download-btn" style="margin-left:12px;background:var(--red)">Download PDF Version</a>
+
+</div>
+
+<!-- TAB: STORY TELLING -->
+<div class="tab" id="tab-storytelling">
+<h2>Story Telling</h2>
+<p class="subtitle-line">The 7-minute narrative arc &mdash; grounded in Appreciative Inquiry, brought to life through PORTILAME's real journey</p>
+
+<div class="card navy" style="margin-bottom:24px">
+<div class="card-title">Narrative Design Principle</div>
+<div class="card-text" style="color:#111">This storytelling follows Gay Zaragoza's four principles: (1) Sell the dream, not the product, (2) Open with empathy, (3) Anchor in authentic emotion, (4) Adapt for the audience. It also maps to the Appreciative Inquiry cycle: Discover &rarr; Dream &rarr; Design &rarr; Destiny. Every claim is grounded in real organizational evidence.</div>
+</div>
+
+<h3>Act 1: The Hook (45 seconds) &mdash; Slide 2</h3>
+<div class="card">
+<div class="card-title">Opening &mdash; Empathy Generation</div>
+<div class="card-text">
+<em>"Imagine a company with around 100 people. That means around 100 families. Their children &mdash; some who could be our parents, some who could be our children. Now imagine this: that company is growing at 40% per year. And its founders just realized they no longer have the availability, the capacity, or the knowledge to lead it."</em><br><br>
+Pause. Let the weight land.<br><br>
+<em>"They did something most leaders never do. They lowered their pride. They elevated their humility. And two years late &mdash; but not too late &mdash; they started rebuilding everything."</em>
+</div>
+</div>
+
+<h3>Act 2: The Context (45 seconds) &mdash; Slide 3</h3>
+<div class="card">
+<div class="card-title">The World We Lead In &mdash; Why This Matters Now</div>
+<div class="card-text">
+66% of Europeans have experienced burnout (STADA 2025). Portugal leads the EU in burnout risk. 75% of sick leave cost in Spain is mental health-related. 39% of current skills will be disrupted by 2030 (WEF). Only 3% of companies are innovation-ready.<br><br>
+Meanwhile, employee engagement in Spain: only 13% actively engaged. 78% not engaged. The world is changing faster than our organizations can adapt.<br><br>
+Our group challenge: <strong>Leading effectively in times of constant change and uncertainty.</strong>
+</div>
+</div>
+
+<h3>Act 3: Discover (60 seconds) &mdash; Slide 4</h3>
+<div class="card green">
+<div class="card-title">What Works When Leadership Is at Its Best</div>
+<div class="card-text">
+We asked ourselves and discovered five truths across all our organizations:<br><br>
+<strong>1. Trust is the foundation</strong> &mdash; earned and extended, not mandated.<br>
+<strong>2. Flexibility and autonomy empower people</strong> &mdash; especially during disruption.<br>
+<strong>3. Open communication with shared optimism</strong> &mdash; acknowledging effort, accepting imperfection.<br>
+<strong>4. Proactive support structures</strong> &mdash; built in, not deployed in crisis mode.<br>
+<strong>5. Clarity, purpose, and structure reduce uncertainty</strong> &mdash; leadership that absorbs ambiguity and converts it into clarity.<br><br>
+At PORTILAME, this was the DNA that built 20 years of growth: "Who likes, comes. Who loves, stays."
+</div>
+</div>
+
+<h3>Act 4: Dream (45 seconds) &mdash; Slide 5</h3>
+<div class="card orange">
+<div class="card-title">What Could Be</div>
+<div class="card-text">
+We want every proud face of our people to tell us that their children say:<br><br>
+<em>"My hero is my father! When I grow up, I want to be like him: work at PORTILAME."</em><br><br>
+That is the dream. Not metrics. Not awards. Children who see their parents come home fulfilled, proud, and inspired. That is the measure of a truly healthy organization.<br><br>
+PORTILAME had this culture in its DNA from the beginning. Then rapid growth fractured it. The mission now is not to invent something new &mdash; it is to recover, protect, and systematize what was always there. And from that journey, build a framework that any organization can use.
+</div>
+</div>
+
+<h3>Act 5a: Design &mdash; The ANCHOR Framework (60 seconds) &mdash; Slide 6</h3>
+<div class="card">
+<div class="card-title">The ANCHOR Framework</div>
+<div class="card-text">
+We built a framework from real organizational pain. Six dimensions, three games, one anchor:<br><br>
+<strong>A</strong>WARENESS <em>(Being)</em> &mdash; Self and system. Know yourself (Character Strengths), know your biases (System 1 vs. 2), know your attention limits (44 seconds average).<br>
+<strong>N</strong>ARRATIVE <em>(Trust)</em> &mdash; Purpose and meaning. Storytelling changes brain chemistry (oxytocin up, cortisol down). "Being PORTILAME" is not a slogan &mdash; it is the narrative that held the culture together.<br>
+<strong>C</strong>ADENCE <em>(Health)</em> &mdash; Rhythms and rituals. Digital habit discipline. Weekly ComEx. Monthly recognition. Quarterly radar. Annual recalibration.<br>
+<strong>H</strong>UMANITY <em>(Belonging)</em> &mdash; People-first. Psychological safety (mistakes, acknowledgement, belonging). Three departments created for the mission: Quality, People &amp; Culture, Brand &amp; Communication.<br>
+<strong>O</strong>RGANIZATION <em>(Growth)</em> &mdash; Adaptive structure. Governance that enables, not constrains. Roles clear enough that autonomy is safe.<br>
+<strong>R</strong>ESILIENCE <em>(Mindfulness)</em> &mdash; Sustainable energy. Self-compassion. Circadian alignment. Recovery is not weakness &mdash; it is strategy.<br><br>
+<strong>Inner Game</strong> (A+N): Who you are. <strong>Outer Game</strong> (C+H+O): How you operate. <strong>Long Game</strong> (R): How you sustain.
+</div>
+</div>
+
+<h3>Act 5b: Design &mdash; The Calibration Engine (30 seconds) &mdash; Slide 7</h3>
+<div class="card blue">
+<div class="card-title">HORIZON + Three-Layer Radar</div>
+<div class="card-text">
+Six dimensions measure who we are. HORIZON measures where the world is going.<br><br>
+The Radar is built primarily on <strong>indirect behavioural signals</strong> from digital systems &mdash; punctuality, non-conformities, absenteeism, communication patterns &mdash; enriched with 360&deg; direct evaluation and only then self-assessment. This composite score is segmented and <strong>predictive</strong>: it anticipates risks before they become problems. Prevention, not cure.<br><br>
+Three scoring layers: <strong>Radar Score</strong> (how healthy are we?), <strong>Universal KPI</strong> (are we at least as good as the best?), <strong>Galactic KPI</strong> (are we ready for what comes next?). The framework self-calibrates over time.
+</div>
+</div>
+
+<h3>Act 5c: Design &mdash; Session Mapping &mdash; Slide 8</h3>
+<div class="card navy">
+<div class="card-title">Every Session Shaped a Dimension</div>
+<div class="card-text" style="color:#ddd">
+Visual mapping of all programme sessions to their corresponding ANCHOR dimensions:<br><br>
+Centeno (Well-being as Strategy) &rarr; A + R &nbsp;|&nbsp; Hurtado (Character Strengths) &rarr; A &nbsp;|&nbsp; Aguirre (Values &amp; Purpose) &rarr; N + R<br>
+Reina (Science of Attention) &rarr; A + C &nbsp;|&nbsp; Maguire (Psychological Safety) &rarr; H &nbsp;|&nbsp; Ferrari (Critical Thinking) &rarr; A + O<br>
+Gay Zaragoza (Leader&rsquo;s Narrative) &rarr; N &nbsp;|&nbsp; De la Serna (Circadian Rhythms) &rarr; C &nbsp;|&nbsp; Sebasti&aacute;n (Cisco) &rarr; O + H &nbsp;|&nbsp; O&rsquo;Connor (Mindfulness) &rarr; R<br><br>
+This slide demonstrates that every dimension of ANCHOR is directly grounded in the programme&rsquo;s academic content &mdash; nothing is arbitrary.
+</div>
+</div>
+
+<h3>Act 5d: Design &mdash; Leadership Tools (30 seconds) &mdash; Slide 9</h3>
+<div class="card green">
+<div class="card-title">Practical Rituals That Make It Live</div>
+<div class="card-text">
+The framework only works if it lives in daily practice. Each tool maps to an ANCHOR dimension:<br><br>
+<strong>Peer Pulse Check</strong> (A) &mdash; weekly micro-feedback on strengths.<br>
+<strong>Recognition Rituals</strong> (N) &mdash; monthly values-aligned celebrations.<br>
+<strong>Cadence Reviews</strong> (C) &mdash; weekly rhythm checks + quarterly radar.<br>
+<strong>Appreciative Problem-Solving</strong> (H) &mdash; solution-focused, not deficit-focused.<br>
+<strong>Initiative Ownership Cards</strong> (O) &mdash; each person chooses one improvement per quarter.<br>
+<strong>Weekly Reflection Ritual</strong> (R) &mdash; 15 min: what went well, what I learned, what I change.<br><br>
+Not bureaucracy. Organic rituals people want to practice.
+</div>
+</div>
+
+<h3>Act 6: Destiny (45 seconds) &mdash; Slide 10</h3>
+<div class="card">
+<div class="card-title">The Roadmap &mdash; From Insight to Action</div>
+<div class="card-text">
+<strong>Phase 0 &mdash; Diagnose:</strong> Before anything, run the 6 Diagnostic Rules: DNA clarity, growth vs. structure gap, leadership bottleneck test, cultural transmission, knowledge institutionalization, people investment. Know where you stand before you move.<br><br>
+<strong>30 days:</strong> Radar baseline, character strengths mapping, first narrative act, cadence installation.<br>
+<strong>90 days:</strong> Governance clarity, psychological safety training, career architecture, Universal KPI benchmarking.<br>
+<strong>12 months:</strong> Full ANCHOR deployment, Galactic KPI targets, succession depth, annual HORIZON recalibration.<br><br>
+Not a project. A permanent operating system for holistic leadership.
+</div>
+</div>
+
+<h3>Act 7: The Close (15 seconds) &mdash; Slide 11</h3>
+<div class="quote">
+<p>An organization that anchors itself in clear values, authentic narrative, disciplined cadence, genuine humanity, adaptive structure, and sustainable energy &mdash; can navigate any storm. Not by predicting the waves. But by building a ship that stays steady.</p>
+<div class="attribution">&mdash; PORTILAME ANCHOR Framework, Group 3</div>
+</div>
+</div>
+
+<!-- TAB: VALIDATION -->
+<div class="tab" id="tab-validation">
+<h2>Validation</h2>
+<p class="subtitle-line">Critical analysis: Do our deliverables meet every requirement and expectation of the Final Work?</p>
+
+<h3>Final Work Requirements Checklist</h3>
+<table class="doc-table">
+<tr><th>Requirement</th><th>Presentation</th><th>Story Telling</th><th>Status</th></tr>
+<tr><td>Structured using Appreciative Inquiry (Discover/Dream/Design/Destiny)</td><td>Slide 4 (Discover), Slide 5 (Dream), Slides 6-9 (Design), Slide 10 (Destiny)</td><td>Acts 3/4/5a-d/6 map directly to AI cycle</td><td style="color:var(--green);font-weight:600">COVERED</td></tr>
+<tr><td>Shared leadership challenge relevant across organizations</td><td>Slides 2-3: emotional hook (100 families) + VUCA/BANI context + "Leading in constant change"</td><td>Act 2: data-driven context, universal relevance</td><td style="color:var(--green);font-weight:600">COVERED</td></tr>
+<tr><td>Think systemically, beyond a single company</td><td>Framework designed universal, PORTILAME as case study not prescription</td><td>Group findings from 5 different organizations integrated</td><td style="color:var(--green);font-weight:600">COVERED</td></tr>
+<tr><td>Transferable principles and practices</td><td>ANCHOR dimensions are company-agnostic. Diagnostic rules are universal</td><td>Each ANCHOR letter explained with transferable principle</td><td style="color:var(--green);font-weight:600">COVERED</td></tr>
+<tr><td>Grounded in real organizational experience</td><td>PORTILAME timeline, 6 diagnosed problems, founders' humility, 20M-euro quote</td><td>Acts 1-3 entirely based on real evidence</td><td style="color:var(--green);font-weight:600">COVERED</td></tr>
+<tr><td>Group vision + individual organizational perspectives</td><td>Group 3 findings integrated + PORTILAME as individual depth case</td><td>Group 5 truths (Act 3) + individual PORTILAME narrative</td><td style="color:var(--green);font-weight:600">COVERED</td></tr>
+<tr><td>7 minutes, free format</td><td>11 slides mapped to 7-min pacing (45+45+60+45+60+30+20+30+45+15 s)</td><td>7 acts (5a-d split) with time allocation totaling ~7 min</td><td style="color:var(--green);font-weight:600">COVERED</td></tr>
+<tr><td>Core question answered</td><td>Slide 11 closing statement directly answers</td><td>Full arc answers: holistic leadership through ANCHOR + AI cycle</td><td style="color:var(--green);font-weight:600">COVERED</td></tr>
+</table>
+
+<h3>Evaluation Criteria Analysis</h3>
+<table class="doc-table">
+<tr><th>Criterion</th><th>Evidence in Deliverables</th><th>Score</th></tr>
+<tr><td><strong>Relevance and Realism</strong></td><td>Framework extracted from real company (PORTILAME, 20+ years, ~100 employees, 25M revenue). 6 formally diagnosed problems. Real governance protocols, performance evaluation, AI policy. Three departments created specifically for the transformation. Not theoretical &mdash; lived.</td><td style="color:var(--green);font-weight:600">STRONG</td></tr>
+<tr><td><strong>Integration of Appreciative Inquiry</strong></td><td>Full 4-D cycle structures both the presentation and the storytelling arc. Discover (Group 3 findings + PORTILAME DNA). Dream (hero quote: &ldquo;My hero is my father&hellip; work at PORTILAME&rdquo;, lateral leadership). Design (ANCHOR 6+1 dimensions). Destiny (30/90/365 roadmap with KPIs).</td><td style="color:var(--green);font-weight:600">STRONG</td></tr>
+<tr><td><strong>Quality and Depth of Insights</strong></td><td>Cross-referenced data from WEF, STADA, Gallup, Google Project Aristotle. Scientific backing (oxytocin/cortisol from storytelling, 44-second attention span, cognitive residue). Real organizational data (~100 families, 20M-euro asset, 40% growth). Multi-layered KPI architecture (Radar/Universal/Galactic).</td><td style="color:var(--green);font-weight:600">STRONG</td></tr>
+<tr><td><strong>Integration of Programme Learnings</strong></td><td>See detailed session-by-session mapping below.</td><td style="color:var(--green);font-weight:600">STRONG</td></tr>
+<tr><td><strong>Clarity, Coherence &amp; Impact of Communication</strong></td><td>Storytelling follows Gay Zaragoza's 4 principles. Emotional opening (empathy generation). Clean narrative arc. Visual ANCHOR grid. Closing metaphor (ship in storm).</td><td style="color:var(--green);font-weight:600">STRONG</td></tr>
+</table>
+
+<h3>Session-by-Session Integration Mapping</h3>
+<table class="doc-table">
+<tr><th>Session</th><th>Professor</th><th>How It Appears in Deliverables</th><th>ANCHOR Link</th></tr>
+<tr><td>Day 1: Appreciative Inquiry</td><td>Silvia Centeno</td><td>Entire project structure follows 4-D cycle. Business case for well-being (burnout data, S&amp;P 500 outperformance) in context slide</td><td>All</td></tr>
+<tr><td>Day 1: Character Strengths</td><td>Mar Hurtado de Mendoza</td><td>Strengths-based leadership in Phase 1 self-assessment. 6x engagement data. Growth mindset as foundation. "Human skills" framing</td><td>A &mdash; Awareness</td></tr>
+<tr><td>Day 1: Values &amp; Purpose</td><td>Rodrigo Aguirre de C&aacute;rcer</td><td>Purpose as dual dimension in Dream phase. PORTILAME founding DNA as lived values</td><td>N &mdash; Narrative</td></tr>
+<tr><td>Day 2: Science of Attention</td><td>Stephanie Reina</td><td>44-second attention span data. Cognitive residue. Technoference. "Attention is trainable" as leadership capability</td><td>A &mdash; Awareness</td></tr>
+<tr><td>Day 2: Digital Habits</td><td>Stephanie Reina</td><td>Digital Minimalism principles in Cadence design. Email office hours, notification discipline as organizational rhythm</td><td>C &mdash; Cadence</td></tr>
+<tr><td>Day 2: Psychological Safety</td><td>Laura Maguire</td><td>Three dimensions (mistakes, acknowledgement, belonging) in Humanity pillar. Group 3 safety mapping integrated. Google Project Aristotle data</td><td>H &mdash; Humanity</td></tr>
+<tr><td>Day 2: Mindfulness</td><td>Shane O'Connor</td><td>Presence as aspiration not expectation. Mindfulness as attention replenishment strategy in Resilience</td><td>R &mdash; Resilience</td></tr>
+<tr><td>Day 3: Critical Thinking</td><td>Mar&iacute;a Jos&eacute; Ferrari</td><td>WEF top skill. "Las Meninas" as power-performance analysis. Critical thinking as shield and sword in AI age</td><td>A &mdash; Awareness</td></tr>
+<tr><td>Day 3: Metacognition</td><td>Mar&iacute;a Jos&eacute; Ferrari</td><td>System 1/System 2 framework explains founders' delayed recognition. Cognitive biases in organizational change resistance</td><td>A &mdash; Awareness</td></tr>
+<tr><td>Day 3: Storytelling</td><td>V&iacute;ctor Gay Zaragoza</td><td>4 storytelling principles structure the entire Story Telling tab. Oxytocin/cortisol science. Narrative Economics (Tesla vs. Toyota). Caesar as leadership narrative model</td><td>N &mdash; Narrative</td></tr>
+<tr><td>Day 3: Self-Compassion</td><td>Shane O'Connor</td><td>Self-compassion as Resilience foundation. Body-to-mind communication. Founders' humility as self-compassion act</td><td>R &mdash; Resilience</td></tr>
+<tr><td>Day 1-2: Mindfulness</td><td>Shane O'Connor</td><td>Daily practice as Cadence element. Presence as leadership prerequisite. Breath as attention anchor</td><td>C &mdash; Cadence</td></tr>
+<tr><td>Day 4: Brain Energy &amp; Nutrition</td><td>Daniel de la Serna</td><td>Metabolic flexibility as health marker. Decision-making is energetically expensive. Physical activity is the #1 brain intervention. Brain vs. immune system energy trade-off. Chronic inflammation impairs leadership. Comfort paradox. PORTILAME sports + well-being ecosystem as practical proof</td><td>R &mdash; Resilience, C &mdash; Cadence</td></tr>
+<tr><td>Day 4: Cisco Case Study</td><td>Mario Sebasti&aacute;n</td><td>Organizational transformation at scale. People-first leadership, culture as strategic asset. External validation of ANCHOR principles</td><td>All</td></tr>
+<tr><td>Day 4: Circadian Rhythms</td><td>Daniel de la Serna</td><td>Biorhythms and cortisol/melatonin cycles. Blue light suppresses melatonin by 70%. Chronotypes. Zeitgebers (sunlight, meal timing, temperature). Loss of rhythmicity as pre-symptomatic disease marker</td><td>C &mdash; Cadence, R &mdash; Resilience</td></tr>
+<tr><td>Day 4: Mindfulness &amp; Blind Spots</td><td>Shane O&rsquo;Connor</td><td>Cognitive blind spots (scotomas). Multidimensional nutrition (edible, social, biophilic, passion). Empathic joy vs. envy. Breathwork: 26,000 breaths/day vs. 10&ndash;15,000 optimal. Change through authentic choice</td><td>A &mdash; Awareness, H &mdash; Humanity</td></tr>
+</table>
+
+
+<div class="card green" style="margin-top:16px">
+<div class="card-title">Overall Assessment</div>
+<div class="card-text">
+<strong>Strengths of the deliverables:</strong> Exceptionally grounded in real data (both organizational and academic). The AI cycle is not just mentioned &mdash; it structures the entire work. Every programme session is mapped to a specific ANCHOR dimension with clear evidence. The three-layer KPI system (Radar/Universal/Galactic) goes beyond what was asked &mdash; it shows forward thinking. The emotional storytelling (PORTILAME case) provides the "impact of communication" criterion.<br><br>
+<strong>Risk to monitor:</strong> The 7-minute time constraint is tight for the depth of content. The Story Telling tab provides the pacing guide &mdash; discipline in delivery will be essential. Rehearsal recommended.<br><br>
+<strong>Verdict:</strong> The deliverables meet and exceed all five evaluation criteria. The combination of PPTX (visual structure) + Story Telling (narrative arc) provides both the analytical rigour and the emotional resonance that Silvia Centeno's assessment framework requires.
+</div>
+</div>
+</div>
+
+
+</main>
+</div>
+
+<script>
+function doLogin(){var p=document.getElementById('pw').value;if(p==='anchor2026'){document.getElementById('pwArea').style.display='none';document.getElementById('anchorChoices').classList.add('show')}else{document.getElementById('pw').style.borderColor='#C8102E';document.getElementById('pw').value='';document.getElementById('pw').placeholder='Try again'}}
+function enterFull(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='block'}
+function showTab(id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');var btns=document.querySelectorAll('nav button');var tabs=['assignment','documents','report','day1','day2','day3','day4','day5','tools','roadmap','presentation','storytelling','validation'];var idx=tabs.indexOf(id);if(idx>=0&&btns[idx])btns[idx].classList.add('active');window.scrollTo(0,0)}
+</script>
+</body>
+</html>
